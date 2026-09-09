@@ -1,1116 +1,655 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Отчёт о деятельности строительной техники ООО СК-ТСМ</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            box-sizing: border-box;
-        }
-
-        body {
-            background: #f0f0f0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 20px;
-        }
-
-        main {
-            width: 100%;
-            max-width: 1100px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 20px;
-        }
-
-        .content {
-            background: white;
-            border-radius: 16px;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
-            padding: 30px 40px;
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 25px;
-        }
-
-        .content h3 {
-            color: #222;
-            font-size: 1.6rem;
-            font-weight: 600;
-            border-bottom: 3px solid #ff6a00;
-            padding-bottom: 10px;
-            width: 100%;
-            text-align: center;
-        }
-
-        .placeholder {
-            width: 100%;
-            background: #fafafa;
-            border-radius: 12px;
-            padding: 20px 25px;
-            min-height: 300px;
-            max-height: 500px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 12px;
-            border: 1px solid #e0e0e0;
-        }
-
-        .record-item {
-            width: 100%;
-            background: white;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            padding: 12px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            color: #000;
-            font-weight: 500;
-            font-size: 1rem;
-            transition: 0.2s;
-        }
-
-        .record-item:hover {
-            background: #f5f5f5;
-            border-color: #bbb;
-        }
-
-        .record-info {
-            flex: 1;
-            text-align: left;
-        }
-
-        .record-info .comment {
-            color: #555;
-            font-weight: 400;
-            font-size: 0.9rem;
-            margin-left: 10px;
-        }
-
-        .record-actions {
-            display: flex;
-            gap: 10px;
-        }
-
-        .record-actions button {
-            padding: 6px 14px;
-            border: none;
-            border-radius: 6px;
-            font-weight: 600;
-            cursor: pointer;
-            font-size: 0.85rem;
-            transition: 0.15s;
-        }
-
-        .btn-edit {
-            background: #ffa726;
-            color: #fff;
-        }
-
-        .btn-edit:hover {
-            background: #fb8c00;
-        }
-
-        .btn-delete {
-            background: #ef5350;
-            color: #fff;
-        }
-
-        .btn-delete:hover {
-            background: #c62828;
-        }
-
-        .btn-back {
-            background: #78909c;
-            color: #fff;
-            padding: 8px 20px;
-            border: none;
-            border-radius: 6px;
-            font-weight: 600;
-            cursor: pointer;
-            font-size: 0.9rem;
-            align-self: flex-start;
-        }
-
-        .btn-back:hover {
-            background: #546e7a;
-        }
-
-        .buttons {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 15px;
-            width: 100%;
-            margin-top: 5px;
-        }
-
-        .functions {
-            background: #ff6a00;
-            color: white;
-            border: none;
-            border-radius: 30px;
-            padding: 12px 28px;
-            font-weight: 700;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: 0.2s;
-            box-shadow: 0 2px 8px rgba(255, 106, 0, 0.3);
-            min-width: 160px;
-        }
-
-        .functions:hover {
-            background: #e05e00;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 14px rgba(255, 106, 0, 0.35);
-        }
-
-        .functions.excel {
-            background: #1e7e34;
-            box-shadow: 0 2px 8px rgba(30, 126, 52, 0.3);
-        }
-
-        .functions.excel:hover {
-            background: #166b2b;
-        }
-
-        .functions.danger {
-            background: #d32f2f;
-        }
-
-        .functions.danger:hover {
-            background: #b71c1c;
-        }
-
-        .elementBtn {
-            width: 100%;
-            max-width: 400px;
-            padding: 14px 20px;
-            background: white;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: #222;
-            cursor: pointer;
-            transition: 0.2s;
-            text-align: center;
-        }
-
-        .elementBtn:hover {
-            background: #ff6a00;
-            color: white;
-            border-color: #ff6a00;
-        }
-
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 2000;
-            backdrop-filter: blur(2px);
-        }
-
-        .modal-box {
-            background: white;
-            border-radius: 16px;
-            padding: 30px 35px;
-            min-width: 340px;
-            max-width: 90%;
-            display: flex;
-            flex-direction: column;
-            gap: 18px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25);
-            max-height: 90vh;
-            overflow-y: auto;
-        }
-
-        .modal-box h3 {
-            color: #222;
-            text-align: center;
-            font-weight: 600;
-        }
-
-        .modal-box input,
-        .modal-box textarea {
-            padding: 12px 16px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            font-size: 1rem;
-            width: 100%;
-        }
-
-        .modal-box textarea {
-            resize: vertical;
-            min-height: 60px;
-        }
-
-        .modal-box input:focus,
-        .modal-box textarea:focus {
-            outline: none;
-            border-color: #ff6a00;
-        }
-
-        .modal-actions {
-            display: flex;
-            justify-content: flex-end;
-            gap: 12px;
-            margin-top: 5px;
-            flex-wrap: wrap;
-        }
-
-        .modal-actions button {
-            padding: 10px 24px;
-            border: none;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            font-size: 0.95rem;
-        }
-
-        .modal-actions .btn-save {
-            background: #ff6a00;
-            color: white;
-        }
-
-        .modal-actions .btn-save:hover {
-            background: #e05e00;
-        }
-
-        .modal-actions .btn-cancel {
-            background: #e0e0e0;
-            color: #333;
-        }
-
-        .modal-actions .btn-cancel:hover {
-            background: #bdbdbd;
-        }
-
-        .modal-actions .btn-select-all {
-            background: #1976d2;
-            color: white;
-        }
-
-        .modal-actions .btn-select-all:hover {
-            background: #0d47a1;
-        }
-
-        .export-list {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            max-height: 300px;
-            overflow-y: auto;
-            padding: 5px;
-        }
-
-        .export-list label {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 10px;
-            font-size: 1rem;
-            padding: 6px 10px;
-            border-radius: 6px;
-            transition: 0.1s;
-            cursor: pointer;
-        }
-
-        .export-list label:hover {
-            background: #f0f0f0;
-        }
-
-        .export-list label span {
-            flex: 1;
-        }
-
-        .export-list label input[type="checkbox"],
-        .export-list label input[type="radio"] {
-            margin-left: auto;
-            transform: scale(1.3);
-            cursor: pointer;
-        }
-
-        .date-group {
-            display: flex;
-            gap: 10px;
-            width: 100%;
-        }
-
-        .date-group input {
-            flex: 1;
-            text-align: center;
-        }
-
-        .hidden {
-            display: none !important;
-        }
-
-        .logout-btn {
-            background: #555;
-            color: white;
-            border: none;
-            border-radius: 30px;
-            padding: 10px 25px;
-            font-weight: 600;
-            cursor: pointer;
-            margin-left: auto;
-        }
-
-        .logout-btn:hover {
-            background: #333;
-        }
-
-        /* Улучшенная мобильная адаптация */
-        @media (max-width: 600px) {
-            .content {
-                padding: 20px 15px;
-            }
-
-            .content h3 {
-                font-size: 1.4rem;
-            }
-
-            .functions {
-                min-width: 100%;
-                padding: 12px 16px;
-                font-size: 0.95rem;
-            }
-
-            .record-item {
-                flex-wrap: wrap;
-                gap: 8px;
-            }
-
-            .record-actions {
-                width: 100%;
-                justify-content: flex-end;
-            }
-
-            .date-group {
-                flex-wrap: wrap;
-            }
-
-            .modal-box {
-                padding: 20px;
-                min-width: 0;
-                width: 95%;
-            }
-
-            .modal-actions {
-                flex-direction: column-reverse;
-            }
-
-            .modal-actions button {
-                width: 100%;
-                padding: 12px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .content {
-                padding: 15px 10px;
-                border-radius: 12px;
-            }
-
-            .placeholder {
-                padding: 15px;
-            }
-
-            .record-actions button {
-                font-size: 0.8rem;
-                padding: 8px 10px;
-            }
-
-            .btn-back {
-                font-size: 0.8rem;
-                padding: 6px 12px;
-            }
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Отчёт о деятельности строительной техники ООО СК-ТСМ</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <style>
+    /* (стили без изменений, оставлены как есть) */
+    * { margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; box-sizing: border-box; }
+    body { background: #f0f0f0; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
+    main { width: 100%; max-width: 1100px; display: flex; flex-direction: column; align-items: center; gap: 20px; }
+    .content { background: white; border-radius: 16px; box-shadow: 0 8px 30px rgba(0,0,0,0.12); padding: 30px 40px; width: 100%; display: flex; flex-direction: column; align-items: center; gap: 25px; }
+    .content h3 { color: #222; font-size: 1.6rem; font-weight: 600; border-bottom: 3px solid #ff6a00; padding-bottom: 10px; width: 100%; text-align: center; }
+    .placeholder { width: 100%; background: #fafafa; border-radius: 12px; padding: 20px 25px; min-height: 300px; max-height: 500px; overflow-y: auto; display: flex; flex-direction: column; align-items: center; gap: 12px; border: 1px solid #e0e0e0; }
+    .record-item { width: 100%; background: white; border: 1px solid #ddd; border-radius: 8px; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; color: #000; font-weight: 500; font-size: 1rem; transition: 0.2s; }
+    .record-item:hover { background: #f5f5f5; border-color: #bbb; }
+    .record-info { flex: 1; text-align: left; }
+    .record-info .comment { color: #555; font-weight: 400; font-size: 0.9rem; margin-left: 10px; }
+    .record-actions { display: flex; gap: 10px; }
+    .record-actions button { padding: 6px 14px; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 0.85rem; transition: 0.15s; }
+    .btn-edit { background: #ffa726; color: #fff; }
+    .btn-edit:hover { background: #fb8c00; }
+    .btn-delete { background: #ef5350; color: #fff; }
+    .btn-delete:hover { background: #c62828; }
+    .btn-back { background: #78909c; color: #fff; padding: 8px 20px; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 0.9rem; align-self: flex-start; }
+    .btn-back:hover { background: #546e7a; }
+    .buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; width: 100%; margin-top: 5px; }
+    .functions { background: #ff6a00; color: white; border: none; border-radius: 30px; padding: 12px 28px; font-weight: 700; font-size: 1rem; cursor: pointer; transition: 0.2s; box-shadow: 0 2px 8px rgba(255,106,0,0.3); min-width: 160px; }
+    .functions:hover { background: #e05e00; transform: translateY(-2px); box-shadow: 0 6px 14px rgba(255,106,0,0.35); }
+    .functions.excel { background: #1e7e34; box-shadow: 0 2px 8px rgba(30,126,52,0.3); }
+    .functions.excel:hover { background: #166b2b; }
+    .functions.danger { background: #d32f2f; }
+    .functions.danger:hover { background: #b71c1c; }
+    .elementBtn { width: 100%; max-width: 400px; padding: 14px 20px; background: white; border: 1px solid #ccc; border-radius: 8px; font-size: 1.1rem; font-weight: 600; color: #222; cursor: pointer; transition: 0.2s; text-align: center; }
+    .elementBtn:hover { background: #ff6a00; color: white; border-color: #ff6a00; }
+    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; z-index: 2000; backdrop-filter: blur(2px); }
+    .modal-box { background: white; border-radius: 16px; padding: 30px 35px; min-width: 340px; max-width: 90%; display: flex; flex-direction: column; gap: 18px; box-shadow: 0 10px 40px rgba(0,0,0,0.25); max-height: 90vh; overflow-y: auto; }
+    .modal-box h3 { color: #222; text-align: center; font-weight: 600; }
+    .modal-box input, .modal-box textarea { padding: 12px 16px; border: 1px solid #ccc; border-radius: 8px; font-size: 1rem; width: 100%; }
+    .modal-box textarea { resize: vertical; min-height: 60px; }
+    .modal-box input:focus, .modal-box textarea:focus { outline: none; border-color: #ff6a00; }
+    .modal-actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 5px; flex-wrap: wrap; }
+    .modal-actions button { padding: 10px 24px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 0.95rem; }
+    .modal-actions .btn-save { background: #ff6a00; color: white; }
+    .modal-actions .btn-save:hover { background: #e05e00; }
+    .modal-actions .btn-cancel { background: #e0e0e0; color: #333; }
+    .modal-actions .btn-cancel:hover { background: #bdbdbd; }
+    .modal-actions .btn-select-all { background: #1976d2; color: white; }
+    .modal-actions .btn-select-all:hover { background: #0d47a1; }
+    .export-list { display: flex; flex-direction: column; gap: 8px; max-height: 300px; overflow-y: auto; padding: 5px; }
+    .export-list label { display: flex; justify-content: space-between; align-items: center; gap: 10px; font-size: 1rem; padding: 6px 10px; border-radius: 6px; transition: 0.1s; cursor: pointer; }
+    .export-list label:hover { background: #f0f0f0; }
+    .export-list label span { flex: 1; }
+    .export-list label input[type="checkbox"], .export-list label input[type="radio"] { margin-left: auto; transform: scale(1.3); cursor: pointer; }
+    .date-group { display: flex; gap: 10px; width: 100%; }
+    .date-group input { flex: 1; text-align: center; }
+    .hidden { display: none !important; }
+    .logout-btn { background: #555; color: white; border: none; border-radius: 30px; padding: 10px 25px; font-weight: 600; cursor: pointer; margin-left: auto; }
+    .logout-btn:hover { background: #333; }
+    @media (max-width: 600px) {
+      .content { padding: 20px 15px; }
+      .content h3 { font-size: 1.4rem; }
+      .functions { min-width: 100%; padding: 12px 16px; font-size: 0.95rem; }
+      .record-item { flex-wrap: wrap; gap: 8px; }
+      .record-actions { width: 100%; justify-content: flex-end; }
+      .date-group { flex-wrap: wrap; }
+      .modal-box { padding: 20px; min-width: 0; width: 95%; }
+      .modal-actions { flex-direction: column-reverse; }
+      .modal-actions button { width: 100%; padding: 12px; }
+    }
+    @media (max-width: 480px) {
+      .content { padding: 15px 10px; border-radius: 12px; }
+      .placeholder { padding: 15px; }
+      .record-actions button { font-size: 0.8rem; padding: 8px 10px; }
+      .btn-back { font-size: 0.8rem; padding: 6px 12px; }
+    }
+  </style>
 </head>
 <body>
-    <main>
-        <div id="objectsPlace" class="content">
-            <div style="display:flex; justify-content:space-between; width:100%; align-items:center;">
-                <h3>Доступные объекты</h3>
-                <button class="logout-btn" id="logoutBtn">Выйти</button>
-            </div>
-            <div id="placeholder" class="placeholder"></div>
-            <div class="buttons">
-                <button class="functions" id="firstBtn">Создать объект</button>
-                <button class="functions danger" id="secondBtn">Удалить объект</button>
-                <button class="functions excel" id="exportBtn">📊 Экспорт в Excel</button>
-            </div>
-        </div>
-    </main>
+<main>
+  <div id="objectsPlace" class="content">
+    <div style="display:flex; justify-content:space-between; width:100%; align-items:center;">
+      <h3>Доступные объекты</h3>
+      <button class="logout-btn" id="logoutBtn">Выйти</button>
+    </div>
+    <div id="placeholder" class="placeholder"></div>
+    <div class="buttons">
+      <button class="functions" id="firstBtn">Создать объект</button>
+      <button class="functions danger" id="secondBtn">Удалить объект</button>
+      <button class="functions excel" id="exportBtn">📊 Экспорт в Excel</button>
+    </div>
+  </div>
+</main>
 
-    <script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-database-compat.js"></script>
 
-    <script>
-        var firebaseConfig = {
-            apiKey: "AIzaSyApQ3Uf09PPE777KAoFP_J0RIP73XzXPcc",
-            authDomain: "sktsm-20bda.firebaseapp.com",
-            databaseURL: "https://sktsm-20bda-default-rtdb.europe-west1.firebasedatabase.app",
-            projectId: "sktsm-20bda",
-            storageBucket: "sktsm-20bda.firebasestorage.app",
-            messagingSenderId: "777878757517",
-            appId: "1:777878757517:web:cdffc314809f92b2d802c4",
-            measurementId: "G-FWSX7MENHT"
-        };
-        firebase.initializeApp(firebaseConfig);
-        var auth = firebase.auth();
-        var db = firebase.database();
+<script>
+// ================== Firebase инициализация ==================
+const firebaseConfig = {
+  apiKey: "AIzaSyApQ3Uf09PPE777KAoFP_J0RIP73XzXPcc",
+  authDomain: "sktsm-20bda.firebaseapp.com",
+  databaseURL: "https://sktsm-20bda-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "sktsm-20bda",
+  storageBucket: "sktsm-20bda.firebasestorage.app",
+  messagingSenderId: "777878757517",
+  appId: "1:777878757517:web:cdffc314809f92b2d802c4",
+  measurementId: "G-FWSX7MENHT"
+};
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.database();
 
-        auth.onAuthStateChanged(function(user) {
-            if (!user) {
-                window.location.href = 'index.html';
-            }
-        });
+auth.onAuthStateChanged(user => {
+  if (!user) window.location.href = 'index.html';
+});
 
-        document.getElementById('logoutBtn').addEventListener('click', function() {
-            auth.signOut().then(function() {
-                window.location.href = 'index.html';
-            });
-        });
+document.getElementById('logoutBtn').addEventListener('click', () => {
+  auth.signOut().then(() => window.location.href = 'index.html');
+});
 
-        var placeholder = document.getElementById('placeholder');
-        var currentObject = null;
+// ================== Глобальные переменные ==================
+const placeholder = document.getElementById('placeholder');
+let currentObject = null; // имя текущего объекта (или null)
 
-        function closeModal(overlay) {
-            if (overlay && overlay.parentNode) overlay.parentNode.removeChild(overlay);
+// ================== Вспомогательные функции ==================
+function showToast(msg) { alert(msg); }
+
+function closeModal(overlay) {
+  if (overlay && overlay.parentNode) overlay.parentNode.removeChild(overlay);
+}
+
+// Приводит запись (число или объект) к единому формату { hours, comment }
+function normalizeEntry(entry) {
+  if (typeof entry === 'number') return { hours: entry, comment: '' };
+  if (entry && typeof entry === 'object') {
+    return { hours: entry.hours || 0, comment: entry.comment || '' };
+  }
+  return { hours: 0, comment: '' };
+}
+
+// Валидация даты
+function validateDate(day, month, year) {
+  const d = parseInt(day, 10), m = parseInt(month, 10), y = parseInt(year, 10);
+  if (isNaN(d) || isNaN(m) || isNaN(y)) return null;
+  if (d < 1 || d > 31 || m < 1 || m > 12 || y < 2000) return null;
+  return { day: String(d).padStart(2, '0'), month: String(m).padStart(2, '0'), year: String(y) };
+}
+
+function validateHours(value) {
+  const num = Number(value);
+  return !isNaN(num) && num > 0 && isFinite(num);
+}
+
+// ================== Управление кнопками (режим список / детали) ==================
+function updateButtons(mode) {
+  const firstBtn = document.getElementById('firstBtn');
+  const secondBtn = document.getElementById('secondBtn');
+  const exportBtn = document.getElementById('exportBtn');
+
+  if (mode === 'list') {
+    firstBtn.textContent = 'Создать объект';
+    firstBtn.onclick = () => showAddObjectModal();
+    secondBtn.classList.remove('hidden');
+    secondBtn.textContent = 'Удалить объект';
+    secondBtn.onclick = () => deleteObject();
+    exportBtn.style.display = 'inline-block';
+  } else { // details
+    firstBtn.textContent = '➕ Добавить запись';
+    firstBtn.onclick = () => showAddRecordModal();
+    secondBtn.classList.add('hidden');
+    exportBtn.style.display = 'inline-block';
+  }
+}
+
+// ================== Загрузка списка объектов ==================
+function getObjects() {
+  placeholder.innerHTML = '';
+  const objectsRef = db.ref('Objects');
+  objectsRef.once('value').then(snapshot => {
+    const data = snapshot.val();
+    if (!data) {
+      placeholder.innerHTML = '<p style="color:#888; font-weight:400;">Нет созданных объектов</p>';
+    } else {
+      for (const key in data) {
+        const btn = document.createElement('button');
+        btn.textContent = key;
+        btn.className = 'elementBtn';
+        btn.onclick = () => selectObject(key);
+        placeholder.appendChild(btn);
+      }
+    }
+    currentObject = null;
+    updateButtons('list');
+  }).catch(() => showToast('Ошибка загрузки объектов'));
+}
+
+// ================== Просмотр записей объекта с сортировкой ==================
+function selectObject(objectName) {
+  currentObject = objectName;
+  placeholder.innerHTML = '<button class="btn-back" onclick="getObjects()">← Назад</button>';
+
+  const objRef = db.ref('Objects/' + objectName);
+  objRef.once('value').then(snapshot => {
+    const data = snapshot.val();
+    if (!data) {
+      placeholder.innerHTML += '<p style="color:#888; font-weight:400; margin-top:20px;">Нет записей</p>';
+      updateButtons('details');
+      return;
+    }
+
+    // Собираем все записи в массив
+    const records = [];
+    for (const year in data) {
+      for (const month in data[year]) {
+        for (const day in data[year][month]) {
+          const entry = data[year][month][day];
+          const { hours, comment } = normalizeEntry(entry);
+          // Формируем дату в формате ГГГГ-ММ-ДД для сортировки
+          const dateStr = `${year}-${month.padStart(2,'0')}-${day.padStart(2,'0')}`;
+          records.push({
+            year, month, day,
+            hours,
+            comment,
+            dateStr
+          });
         }
+      }
+    }
 
-        function showToast(msg) {
-            alert(msg);
+    // Сортировка от новых к старым (по убыванию даты)
+    records.sort((a, b) => b.dateStr.localeCompare(a.dateStr));
+
+    // Отображаем записи
+    let numeral = 1;
+    for (const rec of records) {
+      const { year, month, day, hours, comment } = rec;
+      const recordDiv = document.createElement('div');
+      recordDiv.className = 'record-item';
+
+      const infoSpan = document.createElement('span');
+      infoSpan.className = 'record-info';
+      infoSpan.innerHTML = `${numeral}) ${day}.${month}.${year} — <strong>${hours} ч.</strong> <span class="comment">${comment ? '📝 ' + comment : ''}</span>`;
+      recordDiv.appendChild(infoSpan);
+
+      const actionsDiv = document.createElement('div');
+      actionsDiv.className = 'record-actions';
+
+      const editBtn = document.createElement('button');
+      editBtn.className = 'btn-edit';
+      editBtn.textContent = '✎ Редактировать';
+      editBtn.onclick = (e) => {
+        e.stopPropagation();
+        showEditRecordModal(day, month, year, hours, comment);
+      };
+      actionsDiv.appendChild(editBtn);
+
+      const delBtn = document.createElement('button');
+      delBtn.className = 'btn-delete';
+      delBtn.textContent = '✕ Удалить';
+      delBtn.onclick = (e) => {
+        e.stopPropagation();
+        if (confirm(`Удалить запись за ${day}.${month}.${year}?`)) {
+          deleteRecord(day, month, year);
         }
+      };
+      actionsDiv.appendChild(delBtn);
 
-        function validateHours(value) {
-            var num = Number(value);
-            return !(isNaN(num) || num <= 0 || !isFinite(num));
-        }
+      recordDiv.appendChild(actionsDiv);
+      placeholder.appendChild(recordDiv);
+      numeral++;
+    }
+    updateButtons('details');
+  }).catch(() => showToast('Ошибка загрузки записей'));
+}
 
-        function validateDate(day, month, year) {
-            var d = parseInt(day, 10),
-                m = parseInt(month, 10),
-                y = parseInt(year, 10);
-            if (isNaN(d) || isNaN(m) || isNaN(y)) return null;
-            if (d < 1 || d > 31 || m < 1 || m > 12 || y < 2000) return null;
-            return { day: String(d).padStart(2, '0'), month: String(m).padStart(2, '0'), year: String(y) };
-        }
+// ================== Модальные окна ==================
+// --- Создание объекта ---
+function showAddObjectModal() {
+  const overlay = createModal(
+    'Создание нового объекта',
+    `<input type="text" id="inputObjectName" placeholder="Название объекта (без пробелов и спецсимволов)" />`,
+    'Создать'
+  );
+  const saveBtn = overlay.querySelector('.btn-save');
+  const inputName = overlay.querySelector('#inputObjectName');
 
-        function updateButtons(mode) {
-            var firstBtn = document.getElementById('firstBtn');
-            var secondBtn = document.getElementById('secondBtn');
-            var exportBtn = document.getElementById('exportBtn');
+  saveBtn.onclick = () => {
+    const name = inputName.value.trim();
+    if (!name) return showToast('Введите название объекта');
+    if (/[\s\/.#$\[\]]/.test(name)) {
+      return showToast('Имя не должно содержать пробелы, /, ., #, $, [, ]');
+    }
+    const objRef = db.ref('Objects/' + name);
+    objRef.once('value').then(snap => {
+      if (snap.exists()) {
+        showToast('Объект с таким именем уже существует');
+        return Promise.reject('exists');
+      }
+      return objRef.set({});
+    }).then(() => {
+      showToast('Объект создан');
+      closeModal(overlay);
+      getObjects();
+    }).catch(err => {
+      if (err !== 'exists') showToast('Ошибка: ' + err.message);
+    });
+  };
+}
 
-            if (mode === 'list') {
-                firstBtn.textContent = 'Создать объект';
-                firstBtn.onclick = function() { addData(); };
-                secondBtn.classList.remove('hidden');
-                secondBtn.textContent = 'Удалить объект';
-                secondBtn.onclick = function() { deleteObject(); };
-                exportBtn.style.display = 'inline-block';
-            } else if (mode === 'details') {
-                firstBtn.textContent = '➕ Добавить запись';
-                firstBtn.onclick = function() { addData(); };
-                secondBtn.classList.add('hidden');
-                exportBtn.style.display = 'inline-block';
-            }
-        }
+// --- Добавление записи ---
+function showAddRecordModal() {
+  const overlay = createModal(
+    'Добавление записи',
+    `
+      <div class="date-group">
+        <input type="number" id="inputDay" placeholder="День" min="1" max="31" />
+        <input type="number" id="inputMonth" placeholder="Месяц" min="1" max="12" />
+        <input type="number" id="inputYear" placeholder="Год" min="2000" />
+      </div>
+      <input type="number" id="inputTime" placeholder="Количество часов" />
+      <textarea id="inputComment" placeholder="Комментарий (необязательно)"></textarea>
+    `,
+    'Добавить'
+  );
+  const saveBtn = overlay.querySelector('.btn-save');
+  const dayInp = overlay.querySelector('#inputDay');
+  const monthInp = overlay.querySelector('#inputMonth');
+  const yearInp = overlay.querySelector('#inputYear');
+  const timeInp = overlay.querySelector('#inputTime');
+  const commentInp = overlay.querySelector('#inputComment');
 
-        function getObjects() {
-            placeholder.innerHTML = '';
-            var objectsRef = db.ref('Objects');
-            objectsRef.once('value').then(function(snapshot) {
-                var data = snapshot.val();
-                if (!data) {
-                    placeholder.innerHTML = '<p style="color:#888; font-weight:400;">Нет созданных объектов</p>';
-                } else {
-                    for (var key in data) {
-                        var btn = document.createElement('button');
-                        btn.textContent = key;
-                        btn.className = 'elementBtn';
-                        btn.onclick = (function(k) { return function() { selectObject(k); }; })(key);
-                        placeholder.appendChild(btn);
-                    }
-                }
-                currentObject = null;
-                updateButtons('list');
-            }).catch(function(e) {
-                showToast('Ошибка загрузки объектов');
-            });
-        }
+  saveBtn.onclick = () => {
+    const day = dayInp.value.trim();
+    const month = monthInp.value.trim();
+    const year = yearInp.value.trim();
+    const hoursStr = timeInp.value.trim();
+    const comment = commentInp.value.trim();
 
-        function selectObject(objectName) {
-            currentObject = objectName;
-            placeholder.innerHTML = '<button class="btn-back" onclick="getObjects()">← Назад</button>';
-            var objRef = db.ref('Objects/' + objectName);
-            objRef.once('value').then(function(snapshot) {
-                var data = snapshot.val();
-                if (!data) {
-                    placeholder.innerHTML += '<p style="color:#888; font-weight:400; margin-top:20px;">Нет записей</p>';
-                } else {
-                    var numeral = 1;
-                    for (var year in data) {
-                        for (var month in data[year]) {
-                            for (var day in data[year][month]) {
-                                var entry = data[year][month][day];
-                                var hours, comment = '';
-                                if (typeof entry === 'number') {
-                                    hours = entry;
-                                } else if (entry && typeof entry === 'object') {
-                                    hours = entry.hours || 0;
-                                    comment = entry.comment || '';
-                                } else {
-                                    hours = 0;
-                                }
-                                var recordDiv = document.createElement('div');
-                                recordDiv.className = 'record-item';
-                                var infoSpan = document.createElement('span');
-                                infoSpan.className = 'record-info';
-                                infoSpan.innerHTML = numeral + ') ' + day + '.' + month + '.' + year + ' — <strong>' + hours + ' ч.</strong> <span class="comment">' + (comment ? '📝 ' + comment : '') + '</span>';
-                                recordDiv.appendChild(infoSpan);
+    if (!day || !month || !year || !hoursStr) return showToast('Заполните все поля даты и часы');
+    const parsed = validateDate(day, month, year);
+    if (!parsed) return showToast('Неверная дата (день 1-31, месяц 1-12, год >=2000)');
+    if (!validateHours(hoursStr)) return showToast('Часы должны быть положительным числом');
 
-                                var actionsDiv = document.createElement('div');
-                                actionsDiv.className = 'record-actions';
+    const hours = Number(hoursStr);
+    const { day: d, month: m, year: y } = parsed;
+    const recordRef = db.ref(`Objects/${currentObject}/${y}/${m}/${d}`);
 
-                                var editBtn = document.createElement('button');
-                                editBtn.className = 'btn-edit';
-                                editBtn.textContent = '✎ Редактировать';
-                                editBtn.onclick = (function(d, m, y, h, c) {
-                                    return function(e) {
-                                        e.stopPropagation();
-                                        editRecord(d, m, y, h, c);
-                                    };
-                                })(day, month, year, hours, comment);
-                                actionsDiv.appendChild(editBtn);
+    recordRef.once('value').then(snap => {
+      const existing = snap.val();
+      let newHours = hours;
+      let newComment = comment;
+      if (existing !== null) {
+        const old = normalizeEntry(existing);
+        newHours = old.hours + hours;
+        if (!newComment && old.comment) newComment = old.comment;
+      }
+      return recordRef.set({ hours: newHours, comment: newComment });
+    }).then(() => {
+      showToast('Запись добавлена');
+      closeModal(overlay);
+      selectObject(currentObject);
+    }).catch(e => showToast('Ошибка добавления: ' + e.message));
+  };
+}
 
-                                var delBtn = document.createElement('button');
-                                delBtn.className = 'btn-delete';
-                                delBtn.textContent = '✕ Удалить';
-                                delBtn.onclick = (function(d, m, y) {
-                                    return function(e) {
-                                        e.stopPropagation();
-                                        if (confirm('Удалить запись за ' + d + '.' + m + '.' + y + '?')) {
-                                            deleteRecord(d, m, y);
-                                        }
-                                    };
-                                })(day, month, year);
-                                actionsDiv.appendChild(delBtn);
+// --- Редактирование записи ---
+function showEditRecordModal(day, month, year, currentHours, currentComment) {
+  const overlay = createModal(
+    `Редактирование записи ${day}.${month}.${year}`,
+    `
+      <input type="number" id="editTime" placeholder="Новое количество часов" value="${currentHours}" />
+      <textarea id="editComment" placeholder="Комментарий">${currentComment || ''}</textarea>
+    `,
+    'Сохранить'
+  );
+  const saveBtn = overlay.querySelector('.btn-save');
+  const timeInp = overlay.querySelector('#editTime');
+  const commentInp = overlay.querySelector('#editComment');
 
-                                recordDiv.appendChild(actionsDiv);
-                                placeholder.appendChild(recordDiv);
-                                numeral++;
-                            }
-                        }
-                    }
-                }
-                updateButtons('details');
-            }).catch(function(e) {
-                showToast('Ошибка загрузки записей');
-            });
-        }
+  saveBtn.onclick = () => {
+    const hoursStr = timeInp.value.trim();
+    if (!validateHours(hoursStr)) return showToast('Часы должны быть положительным числом');
+    const hours = Number(hoursStr);
+    const comment = commentInp.value.trim();
+    const recordRef = db.ref(`Objects/${currentObject}/${year}/${month}/${day}`);
+    recordRef.set({ hours, comment })
+      .then(() => {
+        showToast('Запись обновлена');
+        closeModal(overlay);
+        selectObject(currentObject);
+      })
+      .catch(() => showToast('Ошибка обновления'));
+  };
+}
 
-        // ==================== Функция добавления объекта / записи ====================
-        function addData() {
-            var overlay = document.createElement('div');
-            overlay.className = 'modal-overlay';
-            var modal = document.createElement('div');
-            modal.className = 'modal-box';
-            var title = document.createElement('h3');
-            var isObjectMode = (currentObject === null);
-            title.textContent = isObjectMode ? 'Создание нового объекта' : 'Добавление записи';
-            modal.appendChild(title);
+// --- Универсальная функция создания модалки (возвращает overlay) ---
+function createModal(title, bodyHTML, saveLabel) {
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  const modal = document.createElement('div');
+  modal.className = 'modal-box';
 
-            var inputName, inputDay, inputMonth, inputYear, inputTime, inputComment;
+  const h3 = document.createElement('h3');
+  h3.textContent = title;
+  modal.appendChild(h3);
 
-            if (isObjectMode) {
-                inputName = document.createElement('input');
-                inputName.type = 'text';
-                inputName.placeholder = 'Введите название объекта (без пробелов и спецсимволов)';
-                inputName.id = 'inputObjectName';
-                modal.appendChild(inputName);
-            } else {
-                var dateGroup = document.createElement('div');
-                dateGroup.className = 'date-group';
-                inputDay = document.createElement('input');
-                inputDay.type = 'number';
-                inputDay.placeholder = 'День';
-                inputDay.id = 'inputDay';
-                inputDay.min = 1;
-                inputDay.max = 31;
-                dateGroup.appendChild(inputDay);
+  const bodyDiv = document.createElement('div');
+  bodyDiv.innerHTML = bodyHTML;
+  modal.appendChild(bodyDiv);
 
-                inputMonth = document.createElement('input');
-                inputMonth.type = 'number';
-                inputMonth.placeholder = 'Месяц';
-                inputMonth.id = 'inputMonth';
-                inputMonth.min = 1;
-                inputMonth.max = 12;
-                dateGroup.appendChild(inputMonth);
+  const actions = document.createElement('div');
+  actions.className = 'modal-actions';
+  const saveBtn = document.createElement('button');
+  saveBtn.className = 'btn-save';
+  saveBtn.textContent = saveLabel;
+  const cancelBtn = document.createElement('button');
+  cancelBtn.className = 'btn-cancel';
+  cancelBtn.textContent = 'Отмена';
+  actions.appendChild(saveBtn);
+  actions.appendChild(cancelBtn);
+  modal.appendChild(actions);
 
-                inputYear = document.createElement('input');
-                inputYear.type = 'number';
-                inputYear.placeholder = 'Год';
-                inputYear.id = 'inputYear';
-                inputYear.min = 2000;
-                dateGroup.appendChild(inputYear);
-                modal.appendChild(dateGroup);
+  overlay.appendChild(modal);
+  document.body.appendChild(overlay);
 
-                inputTime = document.createElement('input');
-                inputTime.type = 'number';
-                inputTime.placeholder = 'Количество часов';
-                inputTime.id = 'inputTime';
-                modal.appendChild(inputTime);
+  cancelBtn.onclick = () => closeModal(overlay);
+  // Закрытие по клику вне модалки
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) closeModal(overlay);
+  });
 
-                inputComment = document.createElement('textarea');
-                inputComment.placeholder = 'Комментарий (необязательно)';
-                inputComment.id = 'inputComment';
-                modal.appendChild(inputComment);
-            }
+  // Сохраняем кнопку сохранения для добавления обработчика
+  overlay.querySelector('.btn-save').dataset.saveHandler = '';
+  return overlay;
+}
 
-            var actions = document.createElement('div');
-            actions.className = 'modal-actions';
-            var saveBtn = document.createElement('button');
-            saveBtn.className = 'btn-save';
-            saveBtn.textContent = 'Сохранить';
-            var cancelBtn = document.createElement('button');
-            cancelBtn.className = 'btn-cancel';
-            cancelBtn.textContent = 'Отмена';
-            actions.appendChild(saveBtn);
-            actions.appendChild(cancelBtn);
-            modal.appendChild(actions);
-            overlay.appendChild(modal);
-            document.body.appendChild(overlay);
+// ================== Удаление записи ==================
+function deleteRecord(day, month, year) {
+  const recordRef = db.ref(`Objects/${currentObject}/${year}/${month}/${day}`);
+  recordRef.remove()
+    .then(() => {
+      showToast('Запись удалена');
+      selectObject(currentObject);
+    })
+    .catch(() => showToast('Ошибка удаления записи'));
+}
 
-            cancelBtn.onclick = function() { closeModal(overlay); };
+// ================== Удаление объекта ==================
+function deleteObject() {
+  if (!currentObject) {
+    // Показываем список объектов для выбора
+    const overlay = document.createElement('div');
+    overlay.className = 'modal-overlay';
+    const modal = document.createElement('div');
+    modal.className = 'modal-box';
+    const title = document.createElement('h3');
+    title.textContent = 'Выберите объект для удаления';
+    modal.appendChild(title);
 
-            saveBtn.onclick = function(e) {
-                e.preventDefault();
+    const listDiv = document.createElement('div');
+    listDiv.className = 'export-list';
+    const objectsRef = db.ref('Objects');
+    objectsRef.once('value').then(snap => {
+      const data = snap.val();
+      if (!data) {
+        showToast('Нет объектов для удаления');
+        closeModal(overlay);
+        return;
+      }
+      let selected = null;
+      for (const key in data) {
+        const label = document.createElement('label');
+        const span = document.createElement('span');
+        span.textContent = key;
+        const radio = document.createElement('input');
+        radio.type = 'radio';
+        radio.name = 'deleteObject';
+        radio.value = key;
+        radio.onchange = () => { selected = key; };
+        label.appendChild(span);
+        label.appendChild(radio);
+        listDiv.appendChild(label);
+      }
+      modal.appendChild(listDiv);
 
-                if (isObjectMode) {
-                    var name = inputName.value.trim();
-                    if (!name) {
-                        showToast('Введите название объекта');
-                        return;
-                    }
-                    if (/[\s\/.#$\[\]]/.test(name)) {
-                        showToast('Имя не должно содержать пробелы, /, ., #, $, [, ]');
-                        return;
-                    }
-                    var objRef = db.ref('Objects/' + name);
+      const actions = document.createElement('div');
+      actions.className = 'modal-actions';
+      const delBtn = document.createElement('button');
+      delBtn.className = 'btn-save';
+      delBtn.textContent = 'Удалить выбранный';
+      const cancelBtn = document.createElement('button');
+      cancelBtn.className = 'btn-cancel';
+      cancelBtn.textContent = 'Отмена';
+      actions.appendChild(delBtn);
+      actions.appendChild(cancelBtn);
+      modal.appendChild(actions);
+      overlay.appendChild(modal);
+      document.body.appendChild(overlay);
 
-                    objRef.once('value')
-                        .then(function(snap) {
-                            if (snap.exists()) {
-                                showToast('Объект с таким именем уже существует');
-                                return Promise.reject(new Error('Объект уже существует'));
-                            } else {
-                                // ВАЖНОЕ ИСПРАВЛЕНИЕ: сохраняем непустой объект
-                                return objRef.set({ initialized: true });
-                            }
-                        })
-                        .then(function() {
-                            showToast('Объект создан');
-                            closeModal(overlay);
-                            getObjects();
-                        })
-                        .catch(function(err) {
-                            if (err.message !== 'Объект уже существует') {
-                                showToast('Ошибка: ' + (err.message || 'неизвестная ошибка'));
-                            }
-                        });
-                } else {
-                    var day = inputDay.value.trim();
-                    var month = inputMonth.value.trim();
-                    var year = inputYear.value.trim();
-                    var hoursStr = inputTime.value.trim();
-                    var comment = inputComment ? inputComment.value.trim() : '';
-                    if (!day || !month || !year || !hoursStr) {
-                        showToast('Заполните все поля даты и часы');
-                        return;
-                    }
-                    var parsed = validateDate(day, month, year);
-                    if (!parsed) {
-                        showToast('Неверная дата (день 1-31, месяц 1-12, год >=2000)');
-                        return;
-                    }
-                    if (!validateHours(hoursStr)) {
-                        showToast('Часы должны быть положительным числом');
-                        return;
-                    }
-                    var hours = Number(hoursStr);
-                    var d = parsed.day,
-                        m = parsed.month,
-                        y = parsed.year;
-                    var recordRef = db.ref('Objects/' + currentObject + '/' + y + '/' + m + '/' + d);
+      cancelBtn.onclick = () => closeModal(overlay);
+      delBtn.onclick = () => {
+        if (!selected) return showToast('Выберите объект');
+        if (!confirm(`Удалить объект "${selected}" и все его записи?`)) return;
+        db.ref('Objects/' + selected).remove()
+          .then(() => {
+            showToast('Объект удалён');
+            closeModal(overlay);
+            getObjects();
+          })
+          .catch(() => showToast('Ошибка удаления объекта'));
+      };
+    }).catch(() => showToast('Ошибка загрузки объектов'));
+    return;
+  }
 
-                    recordRef.once('value')
-                        .then(function(snap) {
-                            var existing = snap.val();
-                            var newHours = hours;
-                            var newComment = comment;
-                            if (existing !== null) {
-                                var oldHours = 0;
-                                if (typeof existing === 'number') {
-                                    oldHours = existing;
-                                } else if (existing && typeof existing === 'object') {
-                                    oldHours = existing.hours || 0;
-                                    if (!newComment && existing.comment) newComment = existing.comment;
-                                }
-                                newHours = oldHours + hours;
-                                if (!newComment && existing && existing.comment) newComment = existing.comment;
-                            }
-                            return recordRef.set({ hours: newHours, comment: newComment });
-                        })
-                        .then(function() {
-                            showToast('Запись добавлена');
-                            closeModal(overlay);
-                            selectObject(currentObject);
-                        })
-                        .catch(function(e) {
-                            showToast('Ошибка добавления записи: ' + e.message);
-                        });
-                }
-            };
-        }
-
-        function editRecord(day, month, year, currentHours, currentComment) {
-            var overlay = document.createElement('div');
-            overlay.className = 'modal-overlay';
-            var modal = document.createElement('div');
-            modal.className = 'modal-box';
-            var title = document.createElement('h3');
-            title.textContent = 'Редактирование записи ' + day + '.' + month + '.' + year;
-            modal.appendChild(title);
-
-            var inputTime = document.createElement('input');
-            inputTime.type = 'number';
-            inputTime.placeholder = 'Новое количество часов';
-            inputTime.value = currentHours;
-            inputTime.id = 'editTime';
-            modal.appendChild(inputTime);
-
-            var inputComment = document.createElement('textarea');
-            inputComment.placeholder = 'Комментарий';
-            inputComment.value = currentComment || '';
-            inputComment.id = 'editComment';
-            modal.appendChild(inputComment);
-
-            var actions = document.createElement('div');
-            actions.className = 'modal-actions';
-            var saveBtn = document.createElement('button');
-            saveBtn.className = 'btn-save';
-            saveBtn.textContent = 'Сохранить';
-            var cancelBtn = document.createElement('button');
-            cancelBtn.className = 'btn-cancel';
-            cancelBtn.textContent = 'Отмена';
-            actions.appendChild(saveBtn);
-            actions.appendChild(cancelBtn);
-            modal.appendChild(actions);
-            overlay.appendChild(modal);
-            document.body.appendChild(overlay);
-
-            cancelBtn.onclick = function() { closeModal(overlay); };
-
-            saveBtn.onclick = function() {
-                var newHours = inputTime.value.trim();
-                if (!validateHours(newHours)) {
-                    showToast('Часы должны быть положительным числом');
-                    return;
-                }
-                var hours = Number(newHours);
-                var comment = inputComment.value.trim();
-                var recordRef = db.ref('Objects/' + currentObject + '/' + year + '/' + month + '/' + day);
-                recordRef.set({ hours: hours, comment: comment })
-                    .then(function() {
-                        showToast('Запись обновлена');
-                        closeModal(overlay);
-                        selectObject(currentObject);
-                    })
-                    .catch(function(e) {
-                        showToast('Ошибка обновления');
-                    });
-            };
-        }
-
-        function deleteRecord(day, month, year) {
-            var recordRef = db.ref('Objects/' + currentObject + '/' + year + '/' + month + '/' + day);
-            recordRef.remove()
-                .then(function() {
-                    showToast('Запись удалена');
-                    selectObject(currentObject);
-                })
-                .catch(function(e) {
-                    showToast('Ошибка удаления записи');
-                });
-        }
-
-        function deleteObject() {
-            if (!currentObject) {
-                var overlay = document.createElement('div');
-                overlay.className = 'modal-overlay';
-                var modal = document.createElement('div');
-                modal.className = 'modal-box';
-                var title = document.createElement('h3');
-                title.textContent = 'Выберите объект для удаления';
-                modal.appendChild(title);
-
-                var listDiv = document.createElement('div');
-                listDiv.className = 'export-list';
-
-                var objectsRef = db.ref('Objects');
-                objectsRef.once('value').then(function(snap) {
-                    var data = snap.val();
-                    if (!data) {
-                        showToast('Нет объектов для удаления');
-                        closeModal(overlay);
-                        return;
-                    }
-                    var selected = null;
-                    for (var key in data) {
-                        var label = document.createElement('label');
-                        var span = document.createElement('span');
-                        span.textContent = key;
-                        var radio = document.createElement('input');
-                        radio.type = 'radio';
-                        radio.name = 'deleteObject';
-                        radio.value = key;
-                        radio.onchange = function() { selected = this.value; };
-                        label.appendChild(span);
-                        label.appendChild(radio);
-                        listDiv.appendChild(label);
-                    }
-                    modal.appendChild(listDiv);
-
-                    var actions = document.createElement('div');
-                    actions.className = 'modal-actions';
-                    var delBtn = document.createElement('button');
-                    delBtn.className = 'btn-save';
-                    delBtn.textContent = 'Удалить выбранный';
-                    var cancelBtn = document.createElement('button');
-                    cancelBtn.className = 'btn-cancel';
-                    cancelBtn.textContent = 'Отмена';
-                    actions.appendChild(delBtn);
-                    actions.appendChild(cancelBtn);
-                    modal.appendChild(actions);
-                    overlay.appendChild(modal);
-                    document.body.appendChild(overlay);
-
-                    cancelBtn.onclick = function() { closeModal(overlay); };
-
-                    delBtn.onclick = function() {
-                        if (!selected) {
-                            showToast('Выберите объект');
-                            return;
-                        }
-                        if (!confirm('Удалить объект "' + selected + '" и все его записи?')) return;
-                        var objRef = db.ref('Objects/' + selected);
-                        objRef.remove()
-                            .then(function() {
-                                showToast('Объект удалён');
-                                closeModal(overlay);
-                                getObjects();
-                            })
-                            .catch(function(e) {
-                                showToast('Ошибка удаления объекта');
-                            });
-                    };
-                }).catch(function(e) {
-                    showToast('Ошибка загрузки объектов');
-                });
-                return;
-            }
-            if (confirm('Удалить объект "' + currentObject + '" и все его записи?')) {
-                var objRef = db.ref('Objects/' + currentObject);
-                objRef.remove()
-                    .then(function() {
-                        showToast('Объект удалён');
-                        currentObject = null;
-                        getObjects();
-                    })
-                    .catch(function(e) {
-                        showToast('Ошибка удаления объекта');
-                    });
-            }
-        }
-
-        function exportExcel() {
-            if (currentObject) {
-                var objRef = db.ref('Objects/' + currentObject);
-                objRef.once('value').then(function(snap) {
-                    var data = snap.val();
-                    if (!data) {
-                        showToast('Нет данных для экспорта');
-                        return;
-                    }
-                    var rows = [
-                        ['Объект', 'Год', 'Месяц', 'День', 'Часы', 'Комментарий']
-                    ];
-                    for (var year in data) {
-                        for (var month in data[year]) {
-                            for (var day in data[year][month]) {
-                                var entry = data[year][month][day];
-                                var hours, comment = '';
-                                if (typeof entry === 'number') {
-                                    hours = entry;
-                                } else if (entry && typeof entry === 'object') {
-                                    hours = entry.hours || 0;
-                                    comment = entry.comment || '';
-                                } else {
-                                    hours = 0;
-                                }
-                                rows.push([currentObject, year, month, day, hours, comment]);
-                            }
-                        }
-                    }
-                    var wb = XLSX.utils.book_new();
-                    var ws = XLSX.utils.aoa_to_sheet(rows);
-                    XLSX.utils.book_append_sheet(wb, ws, 'Отчёт');
-                    XLSX.writeFile(wb, currentObject + '_отчёт_' + new Date().toISOString().slice(0, 10) + '.xlsx');
-                    showToast('Отчёт по объекту выгружен');
-                }).catch(function(e) {
-                    showToast('Ошибка экспорта');
-                });
-                return;
-            }
-
-            var overlay = document.createElement('div');
-            overlay.className = 'modal-overlay';
-            var modal = document.createElement('div');
-            modal.className = 'modal-box';
-            var title = document.createElement('h3');
-            title.textContent = 'Выберите объекты для экспорта';
-            modal.appendChild(title);
-
-            var listDiv = document.createElement('div');
-            listDiv.className = 'export-list';
-            var objectsRef = db.ref('Objects');
-            objectsRef.once('value').then(function(snap) {
-                var data = snap.val();
-                if (!data) {
-                    showToast('Нет объектов для экспорта');
-                    return;
-                }
-                var checkboxes = {};
-                for (var key in data) {
-                    var label = document.createElement('label');
-                    var span = document.createElement('span');
-                    span.textContent = key;
-                    var cb = document.createElement('input');
-                    cb.type = 'checkbox';
-                    cb.value = key;
-                    cb.checked = true;
-                    checkboxes[key] = cb;
-                    label.appendChild(span);
-                    label.appendChild(cb);
-                    listDiv.appendChild(label);
-                }
-                modal.appendChild(listDiv);
-
-                var actions = document.createElement('div');
-                actions.className = 'modal-actions';
-                var selectAllBtn = document.createElement('button');
-                selectAllBtn.className = 'btn-select-all';
-                selectAllBtn.textContent = 'Выбрать все';
-                var exportBtn = document.createElement('button');
-                exportBtn.className = 'btn-save';
-                exportBtn.textContent = 'Экспортировать выбранные';
-                var cancelBtn = document.createElement('button');
-                cancelBtn.className = 'btn-cancel';
-                cancelBtn.textContent = 'Отмена';
-                actions.appendChild(selectAllBtn);
-                actions.appendChild(exportBtn);
-                actions.appendChild(cancelBtn);
-                modal.appendChild(actions);
-                overlay.appendChild(modal);
-                document.body.appendChild(overlay);
-
-                selectAllBtn.onclick = function() {
-                    var all = Object.values(checkboxes);
-                    var checked = all.every(function(cb) { return cb.checked; });
-                    all.forEach(function(cb) { cb.checked = !checked; });
-                };
-
-                cancelBtn.onclick = function() { closeModal(overlay); };
-
-                exportBtn.onclick = function() {
-                    var selected = Object.keys(checkboxes).filter(function(k) { return checkboxes[k].checked; });
-                    if (selected.length === 0) {
-                        showToast('Выберите хотя бы один объект');
-                        return;
-                    }
-                    closeModal(overlay);
-                    var allRows = [
-                        ['Объект', 'Год', 'Месяц', 'День', 'Часы', 'Комментарий']
-                    ];
-                    var promises = selected.map(function(obj) {
-                        return db.ref('Objects/' + obj).once('value').then(function(snap) {
-                            var d = snap.val();
-                            if (d) {
-                                for (var year in d) {
-                                    for (var month in d[year]) {
-                                        for (var day in d[year][month]) {
-                                            var entry = d[year][month][day];
-                                            var hours, comment = '';
-                                            if (typeof entry === 'number') {
-                                                hours = entry;
-                                            } else if (entry && typeof entry === 'object') {
-                                                hours = entry.hours || 0;
-                                                comment = entry.comment || '';
-                                            } else {
-                                                hours = 0;
-                                            }
-                                            allRows.push([obj, year, month, day, hours, comment]);
-                                        }
-                                    }
-                                }
-                            }
-                        });
-                    });
-                    Promise.all(promises).then(function() {
-                        if (allRows.length === 1) {
-                            showToast('Нет данных для выбранных объектов');
-                            return;
-                        }
-                        var wb = XLSX.utils.book_new();
-                        var ws = XLSX.utils.aoa_to_sheet(allRows);
-                        XLSX.utils.book_append_sheet(wb, ws, 'Отчёт');
-                        XLSX.writeFile(wb, 'Отчёт_по_объектам_' + new Date().toISOString().slice(0, 10) + '.xlsx');
-                        showToast('Отчёт выгружен');
-                    }).catch(function(e) {
-                        showToast('Ошибка экспорта');
-                    });
-                };
-            }).catch(function(e) {
-                showToast('Ошибка загрузки объектов');
-            });
-        }
-
-        document.getElementById('exportBtn').addEventListener('click', exportExcel);
+  // Удаление текущего объекта
+  if (confirm(`Удалить объект "${currentObject}" и все его записи?`)) {
+    db.ref('Objects/' + currentObject).remove()
+      .then(() => {
+        showToast('Объект удалён');
+        currentObject = null;
         getObjects();
-    </script>
+      })
+      .catch(() => showToast('Ошибка удаления объекта'));
+  }
+}
+
+// ================== Экспорт в Excel ==================
+function exportExcel() {
+  // Если выбран объект — экспортируем только его
+  if (currentObject) {
+    const objRef = db.ref('Objects/' + currentObject);
+    objRef.once('value').then(snap => {
+      const data = snap.val();
+      if (!data) return showToast('Нет данных для экспорта');
+      const rows = [['Объект', 'Год', 'Месяц', 'День', 'Часы', 'Комментарий']];
+      for (const year in data) {
+        for (const month in data[year]) {
+          for (const day in data[year][month]) {
+            const { hours, comment } = normalizeEntry(data[year][month][day]);
+            rows.push([currentObject, year, month, day, hours, comment]);
+          }
+        }
+      }
+      downloadExcel(rows, currentObject + '_отчёт_' + new Date().toISOString().slice(0,10) + '.xlsx');
+      showToast('Отчёт по объекту выгружен');
+    }).catch(() => showToast('Ошибка экспорта'));
+    return;
+  }
+
+  // Иначе — модалка выбора объектов
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  const modal = document.createElement('div');
+  modal.className = 'modal-box';
+  const title = document.createElement('h3');
+  title.textContent = 'Выберите объекты для экспорта';
+  modal.appendChild(title);
+
+  const listDiv = document.createElement('div');
+  listDiv.className = 'export-list';
+  const objectsRef = db.ref('Objects');
+  objectsRef.once('value').then(snap => {
+    const data = snap.val();
+    if (!data) {
+      showToast('Нет объектов для экспорта');
+      return;
+    }
+    const checkboxes = {};
+    for (const key in data) {
+      const label = document.createElement('label');
+      const span = document.createElement('span');
+      span.textContent = key;
+      const cb = document.createElement('input');
+      cb.type = 'checkbox';
+      cb.value = key;
+      cb.checked = true;
+      checkboxes[key] = cb;
+      label.appendChild(span);
+      label.appendChild(cb);
+      listDiv.appendChild(label);
+    }
+    modal.appendChild(listDiv);
+
+    const actions = document.createElement('div');
+    actions.className = 'modal-actions';
+    const selectAllBtn = document.createElement('button');
+    selectAllBtn.className = 'btn-select-all';
+    selectAllBtn.textContent = 'Выбрать все';
+    const exportBtn = document.createElement('button');
+    exportBtn.className = 'btn-save';
+    exportBtn.textContent = 'Экспортировать выбранные';
+    const cancelBtn = document.createElement('button');
+    cancelBtn.className = 'btn-cancel';
+    cancelBtn.textContent = 'Отмена';
+    actions.appendChild(selectAllBtn);
+    actions.appendChild(exportBtn);
+    actions.appendChild(cancelBtn);
+    modal.appendChild(actions);
+    overlay.appendChild(modal);
+    document.body.appendChild(overlay);
+
+    selectAllBtn.onclick = () => {
+      const all = Object.values(checkboxes);
+      const checked = all.every(cb => cb.checked);
+      all.forEach(cb => cb.checked = !checked);
+    };
+    cancelBtn.onclick = () => closeModal(overlay);
+    exportBtn.onclick = () => {
+      const selected = Object.keys(checkboxes).filter(k => checkboxes[k].checked);
+      if (selected.length === 0) return showToast('Выберите хотя бы один объект');
+      closeModal(overlay);
+
+      const allRows = [['Объект', 'Год', 'Месяц', 'День', 'Часы', 'Комментарий']];
+      const promises = selected.map(obj =>
+        db.ref('Objects/' + obj).once('value').then(snap => {
+          const d = snap.val();
+          if (d) {
+            for (const year in d) {
+              for (const month in d[year]) {
+                for (const day in d[year][month]) {
+                  const { hours, comment } = normalizeEntry(d[year][month][day]);
+                  allRows.push([obj, year, month, day, hours, comment]);
+                }
+              }
+            }
+          }
+        })
+      );
+      Promise.all(promises).then(() => {
+        if (allRows.length === 1) return showToast('Нет данных для выбранных объектов');
+        downloadExcel(allRows, 'Отчёт_по_объектам_' + new Date().toISOString().slice(0,10) + '.xlsx');
+        showToast('Отчёт выгружен');
+      }).catch(() => showToast('Ошибка экспорта'));
+    };
+  }).catch(() => showToast('Ошибка загрузки объектов'));
+}
+
+function downloadExcel(rows, filename) {
+  const wb = XLSX.utils.book_new();
+  const ws = XLSX.utils.aoa_to_sheet(rows);
+  XLSX.utils.book_append_sheet(wb, ws, 'Отчёт');
+  XLSX.writeFile(wb, filename);
+}
+
+document.getElementById('exportBtn').addEventListener('click', exportExcel);
+
+// ================== Старт ==================
+getObjects();
+</script>
 </body>
 </html>
