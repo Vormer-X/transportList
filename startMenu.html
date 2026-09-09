@@ -98,6 +98,8 @@
         auth.onAuthStateChanged(function(user) {
             if (!user) {
                 window.location.href = 'index.html';
+            } else {
+                console.log('Пользователь авторизован:', user.uid);
             }
         });
 
@@ -235,6 +237,7 @@
             });
         }
 
+        // ==================== ОСНОВНОЕ ИСПРАВЛЕНИЕ ====================
         function addData() {
             var overlay = document.createElement('div');
             overlay.className = 'modal-overlay';
@@ -306,74 +309,106 @@
 
             cancelBtn.onclick = function() { closeModal(overlay); };
 
-            saveBtn.onclick = function() {
+            // Исправленный обработчик с подробными логами
+            saveBtn.onclick = function(e) {
+                e.preventDefault(); // предотвращаем возможное всплытие
+                console.log('🔘 saveBtn clicked, isObjectMode =', isObjectMode);
+
                 if (isObjectMode) {
                     var name = inputName.value.trim();
-                    if (!name) { showToast('Введите название объекта'); return; }
+                    console.log('📛 Имя объекта:', name);
+                    if (!name) {
+                        showToast('Введите название объекта');
+                        return;
+                    }
                     // Запрещаем пробелы, слеш и точки с #$[]
                     if (/[\s\/.#$\[\]]/.test(name)) {
                         showToast('Имя не должно содержать пробелы, /, ., #, $, [, ]');
                         return;
                     }
                     var objRef = db.ref('Objects/' + name);
-                    console.log('Попытка создания объекта:', 'Objects/' + name);
-                    objRef.once('value').then(function(snap) {
-                        if (snap.exists()) { 
-                            showToast('Объект с таким именем уже существует');
-                            return;
-                        }
-                        return objRef.set({});
-                    }).then(function() {
-                        console.log('Объект успешно создан');
-                        showToast('Объект создан');
-                        closeModal(overlay);
-                        getObjects();
-                    }).catch(function(e) {
-                        console.error('Ошибка создания объекта:', e);
-                        showToast('Ошибка: ' + (e.message || 'неизвестная ошибка'));
-                    });
+                    console.log('🔗 Путь к объекту:', 'Objects/' + name);
+
+                    objRef.once('value')
+                        .then(function(snap) {
+                            console.log('📡 Проверка существования: exists =', snap.exists());
+                            if (snap.exists()) {
+                                showToast('Объект с таким именем уже существует');
+                                return Promise.reject(new Error('Объект уже существует'));
+                            } else {
+                                console.log('✅ Объект не существует, выполняем set({})');
+                                return objRef.set({});
+                            }
+                        })
+                        .then(function() {
+                            console.log('🎉 set выполнен успешно');
+                            showToast('Объект создан');
+                            closeModal(overlay);
+                            getObjects();
+                        })
+                        .catch(function(err) {
+                            console.error('❌ Ошибка при создании объекта:', err);
+                            if (err.message !== 'Объект уже существует') {
+                                showToast('Ошибка: ' + (err.message || 'неизвестная ошибка'));
+                            }
+                        });
                 } else {
+                    // Режим добавления записи
                     var day = inputDay.value.trim();
                     var month = inputMonth.value.trim();
                     var year = inputYear.value.trim();
                     var hoursStr = inputTime.value.trim();
                     var comment = inputComment ? inputComment.value.trim() : '';
-                    if (!day || !month || !year || !hoursStr) { showToast('Заполните все поля даты и часы'); return; }
+                    if (!day || !month || !year || !hoursStr) {
+                        showToast('Заполните все поля даты и часы');
+                        return;
+                    }
                     var parsed = validateDate(day, month, year);
-                    if (!parsed) { showToast('Неверная дата (день 1-31, месяц 1-12, год >=2000)'); return; }
-                    if (!validateHours(hoursStr)) { showToast('Часы должны быть положительным числом'); return; }
+                    if (!parsed) {
+                        showToast('Неверная дата (день 1-31, месяц 1-12, год >=2000)');
+                        return;
+                    }
+                    if (!validateHours(hoursStr)) {
+                        showToast('Часы должны быть положительным числом');
+                        return;
+                    }
                     var hours = Number(hoursStr);
                     var d = parsed.day, m = parsed.month, y = parsed.year;
-
                     var recordRef = db.ref('Objects/' + currentObject + '/' + y + '/' + m + '/' + d);
-                    recordRef.once('value').then(function(snap) {
-                        var existing = snap.val();
-                        var newHours = hours;
-                        var newComment = comment;
-                        if (existing !== null) {
-                            var oldHours = 0;
-                            if (typeof existing === 'number') {
-                                oldHours = existing;
-                            } else if (existing && typeof existing === 'object') {
-                                oldHours = existing.hours || 0;
-                                if (!newComment && existing.comment) newComment = existing.comment;
+                    console.log('📝 Добавление записи по пути:', recordRef.toString());
+
+                    recordRef.once('value')
+                        .then(function(snap) {
+                            var existing = snap.val();
+                            var newHours = hours;
+                            var newComment = comment;
+                            if (existing !== null) {
+                                var oldHours = 0;
+                                if (typeof existing === 'number') {
+                                    oldHours = existing;
+                                } else if (existing && typeof existing === 'object') {
+                                    oldHours = existing.hours || 0;
+                                    if (!newComment && existing.comment) newComment = existing.comment;
+                                }
+                                newHours = oldHours + hours;
+                                if (!newComment && existing && existing.comment) newComment = existing.comment;
                             }
-                            newHours = oldHours + hours;
-                            if (!newComment && existing && existing.comment) newComment = existing.comment;
-                        }
-                        return recordRef.set({ hours: newHours, comment: newComment });
-                    }).then(function() {
-                        showToast('Запись добавлена');
-                        closeModal(overlay);
-                        selectObject(currentObject);
-                    }).catch(function(e) {
-                        console.error(e);
-                        showToast('Ошибка добавления записи');
-                    });
+                            return recordRef.set({ hours: newHours, comment: newComment });
+                        })
+                        .then(function() {
+                            showToast('Запись добавлена');
+                            closeModal(overlay);
+                            selectObject(currentObject);
+                        })
+                        .catch(function(e) {
+                            console.error(e);
+                            showToast('Ошибка добавления записи: ' + e.message);
+                        });
                 }
             };
         }
 
+        // Остальные функции (editRecord, deleteRecord, deleteObject, exportExcel) без изменений
         function editRecord(day, month, year, currentHours, currentComment) {
             var overlay = document.createElement('div');
             overlay.className = 'modal-overlay';
