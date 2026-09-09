@@ -346,10 +346,10 @@
         .export-list label span {
             flex: 1;
             text-align: left;
-            word-wrap: break-word;
-            word-break: break-all;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
             padding-right: 10px;
-            line-height: 1.4;
         }
 
         .export-list label input[type="checkbox"],
