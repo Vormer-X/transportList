@@ -6,58 +6,446 @@
     <title>Отчёт о деятельности строительной техники ООО СК-ТСМ</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
-        * { margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; box-sizing: border-box; }
-        body { background: #f0f0f0; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
-        main { width: 100%; max-width: 1100px; display: flex; flex-direction: column; align-items: center; gap: 20px; }
-        .content { background: white; border-radius: 16px; box-shadow: 0 8px 30px rgba(0,0,0,0.12); padding: 30px 40px; width: 100%; display: flex; flex-direction: column; align-items: center; gap: 25px; }
-        .content h3 { color: #222; font-size: 1.6rem; font-weight: 600; border-bottom: 3px solid #ff6a00; padding-bottom: 10px; width: 100%; text-align: center; }
-        .placeholder { width: 100%; background: #fafafa; border-radius: 12px; padding: 20px 25px; min-height: 300px; max-height: 500px; overflow-y: auto; display: flex; flex-direction: column; align-items: center; gap: 12px; border: 1px solid #e0e0e0; }
-        .record-item { width: 100%; background: white; border: 1px solid #ddd; border-radius: 8px; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; color: #000; font-weight: 500; font-size: 1rem; transition: 0.2s; }
-        .record-item:hover { background: #f5f5f5; border-color: #bbb; }
-        .record-info { flex: 1; text-align: left; }
-        .record-info .comment { color: #555; font-weight: 400; font-size: 0.9rem; margin-left: 10px; }
-        .record-actions { display: flex; gap: 10px; }
-        .record-actions button { padding: 6px 14px; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 0.85rem; transition: 0.15s; }
-        .btn-edit { background: #ffa726; color: #fff; }
-        .btn-edit:hover { background: #fb8c00; }
-        .btn-delete { background: #ef5350; color: #fff; }
-        .btn-delete:hover { background: #c62828; }
-        .btn-back { background: #78909c; color: #fff; padding: 8px 20px; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 0.9rem; align-self: flex-start; }
-        .btn-back:hover { background: #546e7a; }
-        .buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; width: 100%; margin-top: 5px; }
-        .functions { background: #ff6a00; color: white; border: none; border-radius: 30px; padding: 12px 28px; font-weight: 700; font-size: 1rem; cursor: pointer; transition: 0.2s; box-shadow: 0 2px 8px rgba(255,106,0,0.3); min-width: 160px; }
-        .functions:hover { background: #e05e00; transform: translateY(-2px); box-shadow: 0 6px 14px rgba(255,106,0,0.35); }
-        .functions.excel { background: #1e7e34; box-shadow: 0 2px 8px rgba(30,126,52,0.3); }
-        .functions.excel:hover { background: #166b2b; }
-        .functions.danger { background: #d32f2f; }
-        .functions.danger:hover { background: #b71c1c; }
-        .elementBtn { width: 100%; max-width: 400px; padding: 14px 20px; background: white; border: 1px solid #ccc; border-radius: 8px; font-size: 1.1rem; font-weight: 600; color: #222; cursor: pointer; transition: 0.2s; text-align: center; }
-        .elementBtn:hover { background: #ff6a00; color: white; border-color: #ff6a00; }
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; z-index: 2000; backdrop-filter: blur(2px); }
-        .modal-box { background: white; border-radius: 16px; padding: 30px 35px; min-width: 340px; max-width: 90%; display: flex; flex-direction: column; gap: 18px; box-shadow: 0 10px 40px rgba(0,0,0,0.25); max-height: 90vh; overflow-y: auto; }
-        .modal-box h3 { color: #222; text-align: center; font-weight: 600; }
-        .modal-box input, .modal-box textarea { padding: 12px 16px; border: 1px solid #ccc; border-radius: 8px; font-size: 1rem; width: 100%; }
-        .modal-box textarea { resize: vertical; min-height: 60px; }
-        .modal-box input:focus, .modal-box textarea:focus { outline: none; border-color: #ff6a00; }
-        .modal-actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 5px; flex-wrap: wrap; }
-        .modal-actions button { padding: 10px 24px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 0.95rem; }
-        .modal-actions .btn-save { background: #ff6a00; color: white; }
-        .modal-actions .btn-save:hover { background: #e05e00; }
-        .modal-actions .btn-cancel { background: #e0e0e0; color: #333; }
-        .modal-actions .btn-cancel:hover { background: #bdbdbd; }
-        .modal-actions .btn-select-all { background: #1976d2; color: white; }
-        .modal-actions .btn-select-all:hover { background: #0d47a1; }
-        .export-list { display: flex; flex-direction: column; gap: 8px; max-height: 300px; overflow-y: auto; padding: 5px; }
-        .export-list label { display: flex; justify-content: space-between; align-items: center; gap: 10px; font-size: 1rem; padding: 6px 10px; border-radius: 6px; transition: 0.1s; cursor: pointer; }
-        .export-list label:hover { background: #f0f0f0; }
-        .export-list label span { flex: 1; }
-        .export-list label input[type="checkbox"], .export-list label input[type="radio"] { margin-left: auto; transform: scale(1.3); cursor: pointer; }
-        .date-group { display: flex; gap: 10px; width: 100%; }
-        .date-group input { flex: 1; text-align: center; }
-        .hidden { display: none !important; }
-        .logout-btn { background: #555; color: white; border: none; border-radius: 30px; padding: 10px 25px; font-weight: 600; cursor: pointer; margin-left: auto; }
-        .logout-btn:hover { background: #333; }
-        @media (max-width: 600px) { .content { padding: 20px; } .functions { min-width: 120px; padding: 10px 16px; font-size: 0.9rem; } .record-item { flex-wrap: wrap; gap: 8px; } .record-actions { width: 100%; justify-content: flex-end; } .date-group { flex-wrap: wrap; } }
+        * {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        main {
+            width: 100%;
+            max-width: 1100px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .content {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+            padding: 30px 40px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 25px;
+        }
+
+        .content h3 {
+            color: #222;
+            font-size: 1.6rem;
+            font-weight: 600;
+            border-bottom: 3px solid #ff6a00;
+            padding-bottom: 10px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .placeholder {
+            width: 100%;
+            background: #fafafa;
+            border-radius: 12px;
+            padding: 20px 25px;
+            min-height: 300px;
+            max-height: 500px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .record-item {
+            width: 100%;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #000;
+            font-weight: 500;
+            font-size: 1rem;
+            transition: 0.2s;
+        }
+
+        .record-item:hover {
+            background: #f5f5f5;
+            border-color: #bbb;
+        }
+
+        .record-info {
+            flex: 1;
+            text-align: left;
+        }
+
+        .record-info .comment {
+            color: #555;
+            font-weight: 400;
+            font-size: 0.9rem;
+            margin-left: 10px;
+        }
+
+        .record-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .record-actions button {
+            padding: 6px 14px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: 0.15s;
+        }
+
+        .btn-edit {
+            background: #ffa726;
+            color: #fff;
+        }
+
+        .btn-edit:hover {
+            background: #fb8c00;
+        }
+
+        .btn-delete {
+            background: #ef5350;
+            color: #fff;
+        }
+
+        .btn-delete:hover {
+            background: #c62828;
+        }
+
+        .btn-back {
+            background: #78909c;
+            color: #fff;
+            padding: 8px 20px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.9rem;
+            align-self: flex-start;
+        }
+
+        .btn-back:hover {
+            background: #546e7a;
+        }
+
+        .buttons {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            width: 100%;
+            margin-top: 5px;
+        }
+
+        .functions {
+            background: #ff6a00;
+            color: white;
+            border: none;
+            border-radius: 30px;
+            padding: 12px 28px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.2s;
+            box-shadow: 0 2px 8px rgba(255, 106, 0, 0.3);
+            min-width: 160px;
+        }
+
+        .functions:hover {
+            background: #e05e00;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 14px rgba(255, 106, 0, 0.35);
+        }
+
+        .functions.excel {
+            background: #1e7e34;
+            box-shadow: 0 2px 8px rgba(30, 126, 52, 0.3);
+        }
+
+        .functions.excel:hover {
+            background: #166b2b;
+        }
+
+        .functions.danger {
+            background: #d32f2f;
+        }
+
+        .functions.danger:hover {
+            background: #b71c1c;
+        }
+
+        .elementBtn {
+            width: 100%;
+            max-width: 400px;
+            padding: 14px 20px;
+            background: white;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #222;
+            cursor: pointer;
+            transition: 0.2s;
+            text-align: center;
+        }
+
+        .elementBtn:hover {
+            background: #ff6a00;
+            color: white;
+            border-color: #ff6a00;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            backdrop-filter: blur(2px);
+        }
+
+        .modal-box {
+            background: white;
+            border-radius: 16px;
+            padding: 30px 35px;
+            min-width: 340px;
+            max-width: 90%;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-box h3 {
+            color: #222;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .modal-box input,
+        .modal-box textarea {
+            padding: 12px 16px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 1rem;
+            width: 100%;
+        }
+
+        .modal-box textarea {
+            resize: vertical;
+            min-height: 60px;
+        }
+
+        .modal-box input:focus,
+        .modal-box textarea:focus {
+            outline: none;
+            border-color: #ff6a00;
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 5px;
+            flex-wrap: wrap;
+        }
+
+        .modal-actions button {
+            padding: 10px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.95rem;
+        }
+
+        .modal-actions .btn-save {
+            background: #ff6a00;
+            color: white;
+        }
+
+        .modal-actions .btn-save:hover {
+            background: #e05e00;
+        }
+
+        .modal-actions .btn-cancel {
+            background: #e0e0e0;
+            color: #333;
+        }
+
+        .modal-actions .btn-cancel:hover {
+            background: #bdbdbd;
+        }
+
+        .modal-actions .btn-select-all {
+            background: #1976d2;
+            color: white;
+        }
+
+        .modal-actions .btn-select-all:hover {
+            background: #0d47a1;
+        }
+
+        .export-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 300px;
+            overflow-y: auto;
+            padding: 5px;
+        }
+
+        .export-list label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            font-size: 1rem;
+            padding: 6px 10px;
+            border-radius: 6px;
+            transition: 0.1s;
+            cursor: pointer;
+        }
+
+        .export-list label:hover {
+            background: #f0f0f0;
+        }
+
+        .export-list label span {
+            flex: 1;
+        }
+
+        .export-list label input[type="checkbox"],
+        .export-list label input[type="radio"] {
+            margin-left: auto;
+            transform: scale(1.3);
+            cursor: pointer;
+        }
+
+        .date-group {
+            display: flex;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .date-group input {
+            flex: 1;
+            text-align: center;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .logout-btn {
+            background: #555;
+            color: white;
+            border: none;
+            border-radius: 30px;
+            padding: 10px 25px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-left: auto;
+        }
+
+        .logout-btn:hover {
+            background: #333;
+        }
+
+        /* Улучшенная мобильная адаптация */
+        @media (max-width: 600px) {
+            .content {
+                padding: 20px 15px;
+            }
+
+            .content h3 {
+                font-size: 1.4rem;
+            }
+
+            .functions {
+                min-width: 100%;
+                padding: 12px 16px;
+                font-size: 0.95rem;
+            }
+
+            .record-item {
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+
+            .record-actions {
+                width: 100%;
+                justify-content: flex-end;
+            }
+
+            .date-group {
+                flex-wrap: wrap;
+            }
+
+            .modal-box {
+                padding: 20px;
+                min-width: 0;
+                width: 95%;
+            }
+
+            .modal-actions {
+                flex-direction: column-reverse;
+            }
+
+            .modal-actions button {
+                width: 100%;
+                padding: 12px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .content {
+                padding: 15px 10px;
+                border-radius: 12px;
+            }
+
+            .placeholder {
+                padding: 15px;
+            }
+
+            .record-actions button {
+                font-size: 0.8rem;
+                padding: 8px 10px;
+            }
+
+            .btn-back {
+                font-size: 0.8rem;
+                padding: 6px 12px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -98,8 +486,6 @@
         auth.onAuthStateChanged(function(user) {
             if (!user) {
                 window.location.href = 'index.html';
-            } else {
-                console.log('Пользователь авторизован:', user.uid);
             }
         });
 
@@ -112,14 +498,26 @@
         var placeholder = document.getElementById('placeholder');
         var currentObject = null;
 
-        function closeModal(overlay) { if (overlay && overlay.parentNode) overlay.parentNode.removeChild(overlay); }
-        function showToast(msg) { alert(msg); }
-        function validateHours(value) { var num = Number(value); return !(isNaN(num) || num <= 0 || !isFinite(num)); }
+        function closeModal(overlay) {
+            if (overlay && overlay.parentNode) overlay.parentNode.removeChild(overlay);
+        }
+
+        function showToast(msg) {
+            alert(msg);
+        }
+
+        function validateHours(value) {
+            var num = Number(value);
+            return !(isNaN(num) || num <= 0 || !isFinite(num));
+        }
+
         function validateDate(day, month, year) {
-            var d = parseInt(day,10), m = parseInt(month,10), y = parseInt(year,10);
-            if (isNaN(d)||isNaN(m)||isNaN(y)) return null;
-            if (d<1||d>31||m<1||m>12||y<2000) return null;
-            return { day: String(d).padStart(2,'0'), month: String(m).padStart(2,'0'), year: String(y) };
+            var d = parseInt(day, 10),
+                m = parseInt(month, 10),
+                y = parseInt(year, 10);
+            if (isNaN(d) || isNaN(m) || isNaN(y)) return null;
+            if (d < 1 || d > 31 || m < 1 || m > 12 || y < 2000) return null;
+            return { day: String(d).padStart(2, '0'), month: String(m).padStart(2, '0'), year: String(y) };
         }
 
         function updateButtons(mode) {
@@ -161,7 +559,6 @@
                 currentObject = null;
                 updateButtons('list');
             }).catch(function(e) {
-                console.error(e);
                 showToast('Ошибка загрузки объектов');
             });
         }
@@ -193,7 +590,7 @@
                                 recordDiv.className = 'record-item';
                                 var infoSpan = document.createElement('span');
                                 infoSpan.className = 'record-info';
-                                infoSpan.innerHTML = numeral + ') ' + day + '.' + month + '.' + year + ' — <strong>' + hours + ' ч.</strong> <span class="comment">' + (comment ? '📝 '+comment : '') + '</span>';
+                                infoSpan.innerHTML = numeral + ') ' + day + '.' + month + '.' + year + ' — <strong>' + hours + ' ч.</strong> <span class="comment">' + (comment ? '📝 ' + comment : '') + '</span>';
                                 recordDiv.appendChild(infoSpan);
 
                                 var actionsDiv = document.createElement('div');
@@ -232,12 +629,11 @@
                 }
                 updateButtons('details');
             }).catch(function(e) {
-                console.error(e);
                 showToast('Ошибка загрузки записей');
             });
         }
 
-        // ==================== ОСНОВНОЕ ИСПРАВЛЕНИЕ ====================
+        // ==================== Функция добавления объекта / записи ====================
         function addData() {
             var overlay = document.createElement('div');
             overlay.className = 'modal-overlay';
@@ -263,14 +659,16 @@
                 inputDay.type = 'number';
                 inputDay.placeholder = 'День';
                 inputDay.id = 'inputDay';
-                inputDay.min = 1; inputDay.max = 31;
+                inputDay.min = 1;
+                inputDay.max = 31;
                 dateGroup.appendChild(inputDay);
 
                 inputMonth = document.createElement('input');
                 inputMonth.type = 'number';
                 inputMonth.placeholder = 'Месяц';
                 inputMonth.id = 'inputMonth';
-                inputMonth.min = 1; inputMonth.max = 12;
+                inputMonth.min = 1;
+                inputMonth.max = 12;
                 dateGroup.appendChild(inputMonth);
 
                 inputYear = document.createElement('input');
@@ -309,51 +707,42 @@
 
             cancelBtn.onclick = function() { closeModal(overlay); };
 
-            // Исправленный обработчик с подробными логами
             saveBtn.onclick = function(e) {
-                e.preventDefault(); // предотвращаем возможное всплытие
-                console.log('🔘 saveBtn clicked, isObjectMode =', isObjectMode);
+                e.preventDefault();
 
                 if (isObjectMode) {
                     var name = inputName.value.trim();
-                    console.log('📛 Имя объекта:', name);
                     if (!name) {
                         showToast('Введите название объекта');
                         return;
                     }
-                    // Запрещаем пробелы, слеш и точки с #$[]
                     if (/[\s\/.#$\[\]]/.test(name)) {
                         showToast('Имя не должно содержать пробелы, /, ., #, $, [, ]');
                         return;
                     }
                     var objRef = db.ref('Objects/' + name);
-                    console.log('🔗 Путь к объекту:', 'Objects/' + name);
 
                     objRef.once('value')
                         .then(function(snap) {
-                            console.log('📡 Проверка существования: exists =', snap.exists());
                             if (snap.exists()) {
                                 showToast('Объект с таким именем уже существует');
                                 return Promise.reject(new Error('Объект уже существует'));
                             } else {
-                                console.log('✅ Объект не существует, выполняем set({})');
-                                return objRef.set({});
+                                // ВАЖНОЕ ИСПРАВЛЕНИЕ: сохраняем непустой объект
+                                return objRef.set({ initialized: true });
                             }
                         })
                         .then(function() {
-                            console.log('🎉 set выполнен успешно');
                             showToast('Объект создан');
                             closeModal(overlay);
                             getObjects();
                         })
                         .catch(function(err) {
-                            console.error('❌ Ошибка при создании объекта:', err);
                             if (err.message !== 'Объект уже существует') {
                                 showToast('Ошибка: ' + (err.message || 'неизвестная ошибка'));
                             }
                         });
                 } else {
-                    // Режим добавления записи
                     var day = inputDay.value.trim();
                     var month = inputMonth.value.trim();
                     var year = inputYear.value.trim();
@@ -373,9 +762,10 @@
                         return;
                     }
                     var hours = Number(hoursStr);
-                    var d = parsed.day, m = parsed.month, y = parsed.year;
+                    var d = parsed.day,
+                        m = parsed.month,
+                        y = parsed.year;
                     var recordRef = db.ref('Objects/' + currentObject + '/' + y + '/' + m + '/' + d);
-                    console.log('📝 Добавление записи по пути:', recordRef.toString());
 
                     recordRef.once('value')
                         .then(function(snap) {
@@ -401,14 +791,12 @@
                             selectObject(currentObject);
                         })
                         .catch(function(e) {
-                            console.error(e);
                             showToast('Ошибка добавления записи: ' + e.message);
                         });
                 }
             };
         }
 
-        // Остальные функции (editRecord, deleteRecord, deleteObject, exportExcel) без изменений
         function editRecord(day, month, year, currentHours, currentComment) {
             var overlay = document.createElement('div');
             overlay.className = 'modal-overlay';
@@ -449,7 +837,10 @@
 
             saveBtn.onclick = function() {
                 var newHours = inputTime.value.trim();
-                if (!validateHours(newHours)) { showToast('Часы должны быть положительным числом'); return; }
+                if (!validateHours(newHours)) {
+                    showToast('Часы должны быть положительным числом');
+                    return;
+                }
                 var hours = Number(newHours);
                 var comment = inputComment.value.trim();
                 var recordRef = db.ref('Objects/' + currentObject + '/' + year + '/' + month + '/' + day);
@@ -460,7 +851,6 @@
                         selectObject(currentObject);
                     })
                     .catch(function(e) {
-                        console.error(e);
                         showToast('Ошибка обновления');
                     });
             };
@@ -474,7 +864,6 @@
                     selectObject(currentObject);
                 })
                 .catch(function(e) {
-                    console.error(e);
                     showToast('Ошибка удаления записи');
                 });
         }
@@ -495,7 +884,11 @@
                 var objectsRef = db.ref('Objects');
                 objectsRef.once('value').then(function(snap) {
                     var data = snap.val();
-                    if (!data) { showToast('Нет объектов для удаления'); closeModal(overlay); return; }
+                    if (!data) {
+                        showToast('Нет объектов для удаления');
+                        closeModal(overlay);
+                        return;
+                    }
                     var selected = null;
                     for (var key in data) {
                         var label = document.createElement('label');
@@ -529,7 +922,10 @@
                     cancelBtn.onclick = function() { closeModal(overlay); };
 
                     delBtn.onclick = function() {
-                        if (!selected) { showToast('Выберите объект'); return; }
+                        if (!selected) {
+                            showToast('Выберите объект');
+                            return;
+                        }
                         if (!confirm('Удалить объект "' + selected + '" и все его записи?')) return;
                         var objRef = db.ref('Objects/' + selected);
                         objRef.remove()
@@ -539,12 +935,10 @@
                                 getObjects();
                             })
                             .catch(function(e) {
-                                console.error(e);
                                 showToast('Ошибка удаления объекта');
                             });
                     };
                 }).catch(function(e) {
-                    console.error(e);
                     showToast('Ошибка загрузки объектов');
                 });
                 return;
@@ -558,7 +952,6 @@
                         getObjects();
                     })
                     .catch(function(e) {
-                        console.error(e);
                         showToast('Ошибка удаления объекта');
                     });
             }
@@ -569,18 +962,26 @@
                 var objRef = db.ref('Objects/' + currentObject);
                 objRef.once('value').then(function(snap) {
                     var data = snap.val();
-                    if (!data) { showToast('Нет данных для экспорта'); return; }
-                    var rows = [['Объект', 'Год', 'Месяц', 'День', 'Часы', 'Комментарий']];
+                    if (!data) {
+                        showToast('Нет данных для экспорта');
+                        return;
+                    }
+                    var rows = [
+                        ['Объект', 'Год', 'Месяц', 'День', 'Часы', 'Комментарий']
+                    ];
                     for (var year in data) {
                         for (var month in data[year]) {
                             for (var day in data[year][month]) {
                                 var entry = data[year][month][day];
                                 var hours, comment = '';
-                                if (typeof entry === 'number') { hours = entry; }
-                                else if (entry && typeof entry === 'object') {
+                                if (typeof entry === 'number') {
+                                    hours = entry;
+                                } else if (entry && typeof entry === 'object') {
                                     hours = entry.hours || 0;
                                     comment = entry.comment || '';
-                                } else { hours = 0; }
+                                } else {
+                                    hours = 0;
+                                }
                                 rows.push([currentObject, year, month, day, hours, comment]);
                             }
                         }
@@ -588,9 +989,11 @@
                     var wb = XLSX.utils.book_new();
                     var ws = XLSX.utils.aoa_to_sheet(rows);
                     XLSX.utils.book_append_sheet(wb, ws, 'Отчёт');
-                    XLSX.writeFile(wb, currentObject + '_отчёт_' + new Date().toISOString().slice(0,10) + '.xlsx');
+                    XLSX.writeFile(wb, currentObject + '_отчёт_' + new Date().toISOString().slice(0, 10) + '.xlsx');
                     showToast('Отчёт по объекту выгружен');
-                }).catch(function(e) { showToast('Ошибка экспорта'); });
+                }).catch(function(e) {
+                    showToast('Ошибка экспорта');
+                });
                 return;
             }
 
@@ -607,7 +1010,10 @@
             var objectsRef = db.ref('Objects');
             objectsRef.once('value').then(function(snap) {
                 var data = snap.val();
-                if (!data) { showToast('Нет объектов для экспорта'); return; }
+                if (!data) {
+                    showToast('Нет объектов для экспорта');
+                    return;
+                }
                 var checkboxes = {};
                 for (var key in data) {
                     var label = document.createElement('label');
@@ -652,9 +1058,14 @@
 
                 exportBtn.onclick = function() {
                     var selected = Object.keys(checkboxes).filter(function(k) { return checkboxes[k].checked; });
-                    if (selected.length === 0) { showToast('Выберите хотя бы один объект'); return; }
+                    if (selected.length === 0) {
+                        showToast('Выберите хотя бы один объект');
+                        return;
+                    }
                     closeModal(overlay);
-                    var allRows = [['Объект', 'Год', 'Месяц', 'День', 'Часы', 'Комментарий']];
+                    var allRows = [
+                        ['Объект', 'Год', 'Месяц', 'День', 'Часы', 'Комментарий']
+                    ];
                     var promises = selected.map(function(obj) {
                         return db.ref('Objects/' + obj).once('value').then(function(snap) {
                             var d = snap.val();
@@ -664,11 +1075,14 @@
                                         for (var day in d[year][month]) {
                                             var entry = d[year][month][day];
                                             var hours, comment = '';
-                                            if (typeof entry === 'number') { hours = entry; }
-                                            else if (entry && typeof entry === 'object') {
+                                            if (typeof entry === 'number') {
+                                                hours = entry;
+                                            } else if (entry && typeof entry === 'object') {
                                                 hours = entry.hours || 0;
                                                 comment = entry.comment || '';
-                                            } else { hours = 0; }
+                                            } else {
+                                                hours = 0;
+                                            }
                                             allRows.push([obj, year, month, day, hours, comment]);
                                         }
                                     }
@@ -677,15 +1091,22 @@
                         });
                     });
                     Promise.all(promises).then(function() {
-                        if (allRows.length === 1) { showToast('Нет данных для выбранных объектов'); return; }
+                        if (allRows.length === 1) {
+                            showToast('Нет данных для выбранных объектов');
+                            return;
+                        }
                         var wb = XLSX.utils.book_new();
                         var ws = XLSX.utils.aoa_to_sheet(allRows);
                         XLSX.utils.book_append_sheet(wb, ws, 'Отчёт');
-                        XLSX.writeFile(wb, 'Отчёт_по_объектам_' + new Date().toISOString().slice(0,10) + '.xlsx');
+                        XLSX.writeFile(wb, 'Отчёт_по_объектам_' + new Date().toISOString().slice(0, 10) + '.xlsx');
                         showToast('Отчёт выгружен');
-                    }).catch(function(e) { showToast('Ошибка экспорта'); });
+                    }).catch(function(e) {
+                        showToast('Ошибка экспорта');
+                    });
                 };
-            }).catch(function(e) { showToast('Ошибка загрузки объектов'); });
+            }).catch(function(e) {
+                showToast('Ошибка загрузки объектов');
+            });
         }
 
         document.getElementById('exportBtn').addEventListener('click', exportExcel);
