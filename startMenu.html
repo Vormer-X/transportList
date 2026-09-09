@@ -81,7 +81,6 @@
     <script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-database-compat.js"></script>
 
     <script>
-        // Конфигурация Firebase
         var firebaseConfig = {
             apiKey: "AIzaSyApQ3Uf09PPE777KAoFP_J0RIP73XzXPcc",
             authDomain: "sktsm-20bda.firebaseapp.com",
@@ -108,7 +107,6 @@
             });
         });
 
-        // ---------- Глобальные переменные ----------
         var placeholder = document.getElementById('placeholder');
         var currentObject = null;
 
@@ -122,7 +120,6 @@
             return { day: String(d).padStart(2,'0'), month: String(m).padStart(2,'0'), year: String(y) };
         }
 
-        // ---------- Управление кнопками ----------
         function updateButtons(mode) {
             var firstBtn = document.getElementById('firstBtn');
             var secondBtn = document.getElementById('secondBtn');
@@ -143,7 +140,6 @@
             }
         }
 
-        // ---------- Загрузка списка объектов ----------
         function getObjects() {
             placeholder.innerHTML = '';
             var objectsRef = db.ref('Objects');
@@ -168,7 +164,6 @@
             });
         }
 
-        // ---------- Просмотр записей объекта ----------
         function selectObject(objectName) {
             currentObject = objectName;
             placeholder.innerHTML = '<button class="btn-back" onclick="getObjects()">← Назад</button>';
@@ -240,7 +235,6 @@
             });
         }
 
-        // ---------- Добавление объекта или записи ----------
         function addData() {
             var overlay = document.createElement('div');
             overlay.className = 'modal-overlay';
@@ -256,7 +250,7 @@
             if (isObjectMode) {
                 inputName = document.createElement('input');
                 inputName.type = 'text';
-                inputName.placeholder = 'Введите название объекта (латиница, цифры, _)';
+                inputName.placeholder = 'Введите название объекта (без пробелов и спецсимволов)';
                 inputName.id = 'inputObjectName';
                 modal.appendChild(inputName);
             } else {
@@ -316,16 +310,21 @@
                 if (isObjectMode) {
                     var name = inputName.value.trim();
                     if (!name) { showToast('Введите название объекта'); return; }
-                    // Проверка на запрещённые символы
-                    if (/[.#$\[\]]/.test(name)) {
-                        showToast('Имя не должно содержать . # $ [ ]');
+                    // Запрещаем пробелы, слеш и точки с #$[]
+                    if (/[\s\/.#$\[\]]/.test(name)) {
+                        showToast('Имя не должно содержать пробелы, /, ., #, $, [, ]');
                         return;
                     }
                     var objRef = db.ref('Objects/' + name);
+                    console.log('Попытка создания объекта:', 'Objects/' + name);
                     objRef.once('value').then(function(snap) {
-                        if (snap.exists()) { showToast('Объект с таким именем уже существует'); return; }
+                        if (snap.exists()) { 
+                            showToast('Объект с таким именем уже существует');
+                            return;
+                        }
                         return objRef.set({});
                     }).then(function() {
+                        console.log('Объект успешно создан');
                         showToast('Объект создан');
                         closeModal(overlay);
                         getObjects();
@@ -375,7 +374,6 @@
             };
         }
 
-        // ---------- Редактирование записи ----------
         function editRecord(day, month, year, currentHours, currentComment) {
             var overlay = document.createElement('div');
             overlay.className = 'modal-overlay';
@@ -433,7 +431,6 @@
             };
         }
 
-        // ---------- Удаление записи ----------
         function deleteRecord(day, month, year) {
             var recordRef = db.ref('Objects/' + currentObject + '/' + year + '/' + month + '/' + day);
             recordRef.remove()
@@ -447,7 +444,6 @@
                 });
         }
 
-        // ---------- Удаление объекта ----------
         function deleteObject() {
             if (!currentObject) {
                 var overlay = document.createElement('div');
@@ -533,7 +529,6 @@
             }
         }
 
-        // ---------- Экспорт в Excel ----------
         function exportExcel() {
             if (currentObject) {
                 var objRef = db.ref('Objects/' + currentObject);
@@ -658,10 +653,7 @@
             }).catch(function(e) { showToast('Ошибка загрузки объектов'); });
         }
 
-        // Назначение обработчика для кнопки экспорта (глобальный)
         document.getElementById('exportBtn').addEventListener('click', exportExcel);
-
-        // Старт: загружаем объекты
         getObjects();
     </script>
 </body>
