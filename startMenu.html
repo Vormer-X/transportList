@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Отчёт о деятельности строительной техники ООО СК-ТСМ</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; box-sizing: border-box; }
+        body { background: #f0f0f0; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
+        main { width: 100%; max-width: 1100px; display: flex; flex-direction: column; align-items: center; gap: 20px; }
+        .content { background: white; border-radius: 16px; box-shadow: 0 8px 30px rgba(0,0,0,0.12); padding: 30px 40px; width: 100%; display: flex; flex-direction: column; align-items: center; gap: 25px; }
+        .content h3 { color: #222; font-size: 1.6rem; font-weight: 600; border-bottom: 3px solid #ff6a00; padding-bottom: 10px; width: 100%; text-align: center; }
+        .placeholder { width: 100%; background: #fafafa; border-radius: 12px; padding: 20px 25px; min-height: 300px; max-height: 500px; overflow-y: auto; display: flex; flex-direction: column; align-items: center; gap: 12px; border: 1px solid #e0e0e0; }
+        .record-item { width: 100%; background: white; border: 1px solid #ddd; border-radius: 8px; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; color: #000; font-weight: 500; font-size: 1rem; transition: 0.2s; }
+        .record-item:hover { background: #f5f5f5; border-color: #bbb; }
+        .record-info { flex: 1; text-align: left; }
+        .record-info .comment { color: #555; font-weight: 400; font-size: 0.9rem; margin-left: 10px; }
+        .record-actions { display: flex; gap: 10px; }
+        .record-actions button { padding: 6px 14px; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 0.85rem; transition: 0.15s; }
+        .btn-edit { background: #ffa726; color: #fff; }
+        .btn-edit:hover { background: #fb8c00; }
+        .btn-delete { background: #ef5350; color: #fff; }
+        .btn-delete:hover { background: #c62828; }
+        .btn-back { background: #78909c; color: #fff; padding: 8px 20px; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 0.9rem; align-self: flex-start; }
+        .btn-back:hover { background: #546e7a; }
+        .buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; width: 100%; margin-top: 5px; }
+        .functions { background: #ff6a00; color: white; border: none; border-radius: 30px; padding: 12px 28px; font-weight: 700; font-size: 1rem; cursor: pointer; transition: 0.2s; box-shadow: 0 2px 8px rgba(255,106,0,0.3); min-width: 160px; }
+        .functions:hover { background: #e05e00; transform: translateY(-2px); box-shadow: 0 6px 14px rgba(255,106,0,0.35); }
+        .functions.excel { background: #1e7e34; box-shadow: 0 2px 8px rgba(30,126,52,0.3); }
+        .functions.excel:hover { background: #166b2b; }
+        .functions.danger { background: #d32f2f; }
+        .functions.danger:hover { background: #b71c1c; }
+        .elementBtn { width: 100%; max-width: 400px; padding: 14px 20px; background: white; border: 1px solid #ccc; border-radius: 8px; font-size: 1.1rem; font-weight: 600; color: #222; cursor: pointer; transition: 0.2s; text-align: center; }
+        .elementBtn:hover { background: #ff6a00; color: white; border-color: #ff6a00; }
+        .object-checkbox { margin-left: 12px; transform: scale(1.3); cursor: pointer; }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; z-index: 2000; backdrop-filter: blur(2px); }
+        .modal-box { background: white; border-radius: 16px; padding: 30px 35px; min-width: 340px; max-width: 90%; display: flex; flex-direction: column; gap: 18px; box-shadow: 0 10px 40px rgba(0,0,0,0.25); max-height: 90vh; overflow-y: auto; }
+        .modal-box h3 { color: #222; text-align: center; font-weight: 600; }
+        .modal-box input, .modal-box textarea { padding: 12px 16px; border: 1px solid #ccc; border-radius: 8px; font-size: 1rem; width: 100%; }
+        .modal-box textarea { resize: vertical; min-height: 60px; }
+        .modal-box input:focus, .modal-box textarea:focus { outline: none; border-color: #ff6a00; }
+        .modal-actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 5px; flex-wrap: wrap; }
+        .modal-actions button { padding: 10px 24px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 0.95rem; }
+        .modal-actions .btn-save { background: #ff6a00; color: white; }
+        .modal-actions .btn-save:hover { background: #e05e00; }
+        .modal-actions .btn-cancel { background: #e0e0e0; color: #333; }
+        .modal-actions .btn-cancel:hover { background: #bdbdbd; }
+        .modal-actions .btn-select-all { background: #1976d2; color: white; }
+        .modal-actions .btn-select-all:hover { background: #0d47a1; }
+        .export-list { display: flex; flex-direction: column; gap: 8px; max-height: 300px; overflow-y: auto; padding: 5px; }
+        .export-list label { display: flex; justify-content: space-between; align-items: center; gap: 10px; font-size: 1rem; padding: 6px 10px; border-radius: 6px; transition: 0.1s; cursor: pointer; }
+        .export-list label:hover { background: #f0f0f0; }
+        .export-list label span { flex: 1; }
+        .export-list label input[type="checkbox"], .export-list label input[type="radio"] { margin-left: auto; transform: scale(1.3); cursor: pointer; }
+        .date-group { display: flex; gap: 10px; width: 100%; }
+        .date-group input { flex: 1; text-align: center; }
+        .hidden { display: none !important; }
+        @media (max-width: 600px) { .content { padding: 20px; } .functions { min-width: 120px; padding: 10px 16px; font-size: 0.9rem; } .record-item { flex-wrap: wrap; gap: 8px; } .record-actions { width: 100%; justify-content: flex-end; } .date-group { flex-wrap: wrap; } }
+    </style>
+</head>
+<body>
+    <main>
+        <div id="objectsPlace" class="content">
+            <h3>Доступные объекты</h3>
+            <div id="placeholder" class="placeholder"></div>
+            <div class="buttons">
+                <button class="functions" id="firstBtn">Создать объект</button>
+                <button class="functions danger" id="secondBtn">Удалить объект</button>
+                <button class="functions excel" id="exportBtn">📊 Экспорт в Excel</button>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // ---------- Глобальные ----------
+        const placeholder = document.getElementById('placeholder');
+        let currentObject = null;
+        const DB_BASE = 'https://sktsm-20bda-default-rtdb.europe-west1.firebasedatabase.app';
+
+        // ---------- Вспомогательные ----------
+        function closeModal(overlay) { if (overlay && overlay.parentNode) overlay.parentNode.removeChild(overlay); }
+        function showToast(msg) { alert(msg); }
+
+        function validateHours(value) {
+            const num = Number(value);
+            return !(isNaN(num) || num <= 0 || !Number.isFinite(num));
+        }
+
+        function validateDate(day, month, year) {
+            const d = parseInt(day,10), m = parseInt(month,10), y = parseInt(year,10);
+            if (isNaN(d)||isNaN(m)||isNaN(y)) return null;
+            if (d<1||d>31||m<1||m>12||y<2000) return null;
+            return { day: String(d).padStart(2,'0'), month: String(m).padStart(2,'0'), year: String(y) };
+        }
+
+        // ---------- Загрузка объектов ----------
+        async function getObjects() {
+            try {
+                placeholder.innerHTML = '';
+                const resp = await fetch(`${DB_BASE}/Objects.json`);
+                const data = await resp.json();
+                if (!data) {
+                    placeholder.innerHTML = '<p style="color:#888; font-weight:400;">Нет созданных объектов</p>';
+                } else {
+                    for (let key in data) {
+                        const btn = document.createElement('button');
+                        btn.textContent = key;
+                        btn.className = 'elementBtn';
+                        btn.onclick = () => selectObject(key);
+                        placeholder.appendChild(btn);
+                    }
+                }
+                currentObject = null;
+                document.getElementById('firstBtn').textContent = 'Создать объект';
+                document.getElementById('firstBtn').onclick = () => addData();
+                document.getElementById('secondBtn').classList.remove('hidden');
+                document.getElementById('secondBtn').textContent = 'Удалить объект';
+                document.getElementById('secondBtn').onclick = () => deleteObject();
+                document.getElementById('exportBtn').style.display = 'inline-block';
+            } catch(e) { console.error(e); showToast('Ошибка загрузки объектов'); }
+        }
+
+        // ---------- Выбор объекта ----------
+        async function selectObject(objectName) {
+            currentObject = objectName;
+            try {
+                placeholder.innerHTML = `<button class="btn-back" onclick="getObjects()">← Назад</button>`;
+                const url = `${DB_BASE}/Objects/${objectName}.json`;
+                const resp = await fetch(url);
+                const data = await resp.json();
+                if (!data) {
+                    placeholder.innerHTML += '<p style="color:#888; font-weight:400; margin-top:20px;">Нет записей</p>';
+                } else {
+                    let numeral = 1;
+                    for (let year in data) {
+                        for (let month in data[year]) {
+                            for (let day in data[year][month]) {
+                                const entry = data[year][month][day];
+                                let hours, comment = '';
+                                if (typeof entry === 'number') {
+                                    hours = entry;
+                                } else if (entry && typeof entry === 'object') {
+                                    hours = entry.hours || 0;
+                                    comment = entry.comment || '';
+                                } else {
+                                    hours = 0;
+                                }
+                                const recordDiv = document.createElement('div');
+                                recordDiv.className = 'record-item';
+                                const infoSpan = document.createElement('span');
+                                infoSpan.className = 'record-info';
+                                infoSpan.innerHTML = `${numeral}) ${day}.${month}.${year} — <strong>${hours} ч.</strong> <span class="comment">${comment ? '📝 '+comment : ''}</span>`;
+                                recordDiv.appendChild(infoSpan);
+
+                                const actionsDiv = document.createElement('div');
+                                actionsDiv.className = 'record-actions';
+
+                                const editBtn = document.createElement('button');
+                                editBtn.className = 'btn-edit';
+                                editBtn.textContent = '✎ Редактировать';
+                                editBtn.onclick = (e) => {
+                                    e.stopPropagation();
+                                    editRecord(day, month, year, hours, comment);
+                                };
+                                actionsDiv.appendChild(editBtn);
+
+                                const delBtn = document.createElement('button');
+                                delBtn.className = 'btn-delete';
+                                delBtn.textContent = '✕ Удалить';
+                                delBtn.onclick = (e) => {
+                                    e.stopPropagation();
+                                    if (confirm(`Удалить запись за ${day}.${month}.${year}?`)) {
+                                        deleteRecord(day, month, year);
+                                    }
+                                };
+                                actionsDiv.appendChild(delBtn);
+
+                                recordDiv.appendChild(actionsDiv);
+                                placeholder.appendChild(recordDiv);
+                                numeral++;
+                            }
+                        }
+                    }
+                }
+                document.getElementById('firstBtn').textContent = '➕ Добавить запись';
+                document.getElementById('firstBtn').onclick = () => addData();
+                document.getElementById('secondBtn').classList.add('hidden');
+                document.getElementById('exportBtn').style.display = 'inline-block';
+            } catch(e) { console.error(e); showToast('Ошибка загрузки записей'); }
+        }
+
+        // ---------- Добавление (объекта или записи) ----------
+        function addData() {
+            const overlay = document.createElement('div');
+            overlay.className = 'modal-overlay';
+            const modal = document.createElement('div');
+            modal.className = 'modal-box';
+            const title = document.createElement('h3');
+            const isObjectMode = (currentObject === null);
+            title.textContent = isObjectMode ? 'Создание нового объекта' : 'Добавление записи';
+            modal.appendChild(title);
+
+            let inputName, inputDay, inputMonth, inputYear, inputTime, inputComment;
+
+            if (isObjectMode) {
+                inputName = document.createElement('input');
+                inputName.type = 'text';
+                inputName.placeholder = 'Введите название объекта';
+                inputName.id = 'inputObjectName';
+                modal.appendChild(inputName);
+            } else {
+                // Группа для даты: день, месяц, год
+                const dateGroup = document.createElement('div');
+                dateGroup.className = 'date-group';
+                inputDay = document.createElement('input');
+                inputDay.type = 'number';
+                inputDay.placeholder = 'День';
+                inputDay.id = 'inputDay';
+                inputDay.min = 1; inputDay.max = 31;
+                dateGroup.appendChild(inputDay);
+
+                inputMonth = document.createElement('input');
+                inputMonth.type = 'number';
+                inputMonth.placeholder = 'Месяц';
+                inputMonth.id = 'inputMonth';
+                inputMonth.min = 1; inputMonth.max = 12;
+                dateGroup.appendChild(inputMonth);
+
+                inputYear = document.createElement('input');
+                inputYear.type = 'number';
+                inputYear.placeholder = 'Год';
+                inputYear.id = 'inputYear';
+                inputYear.min = 2000;
+                dateGroup.appendChild(inputYear);
+                modal.appendChild(dateGroup);
+
+                inputTime = document.createElement('input');
+                inputTime.type = 'number';
+                inputTime.placeholder = 'Количество часов';
+                inputTime.id = 'inputTime';
+                modal.appendChild(inputTime);
+
+                inputComment = document.createElement('textarea');
+                inputComment.placeholder = 'Комментарий (необязательно)';
+                inputComment.id = 'inputComment';
+                modal.appendChild(inputComment);
+            }
+
+            const actions = document.createElement('div');
+            actions.className = 'modal-actions';
+            const saveBtn = document.createElement('button');
+            saveBtn.className = 'btn-save';
+            saveBtn.textContent = 'Сохранить';
+            const cancelBtn = document.createElement('button');
+            cancelBtn.className = 'btn-cancel';
+            cancelBtn.textContent = 'Отмена';
+            actions.appendChild(saveBtn);
+            actions.appendChild(cancelBtn);
+            modal.appendChild(actions);
+            overlay.appendChild(modal);
+            document.body.appendChild(overlay);
+
+            cancelBtn.onclick = () => closeModal(overlay);
+
+            saveBtn.onclick = async () => {
+                if (isObjectMode) {
+                    const name = inputName.value.trim();
+                    if (!name) { showToast('Введите название объекта'); return; }
+                    try {
+                        const check = await fetch(`${DB_BASE}/Objects/${name}.json`);
+                        const exists = await check.json();
+                        if (exists) { showToast('Объект с таким именем уже существует'); return; }
+                        const res = await fetch(`${DB_BASE}/Objects/${name}.json`, {
+                            method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(null)
+                        });
+                        if (!res.ok) throw new Error();
+                        showToast('Объект создан');
+                        closeModal(overlay);
+                        getObjects();
+                    } catch(e) { showToast('Ошибка создания объекта'); }
+                } else {
+                    const day = inputDay.value.trim();
+                    const month = inputMonth.value.trim();
+                    const year = inputYear.value.trim();
+                    const hoursStr = inputTime.value.trim();
+                    const comment = inputComment ? inputComment.value.trim() : '';
+                    if (!day || !month || !year || !hoursStr) { showToast('Заполните все поля даты и часы'); return; }
+                    const parsed = validateDate(day, month, year);
+                    if (!parsed) { showToast('Неверная дата (день 1-31, месяц 1-12, год >=2000)'); return; }
+                    if (!validateHours(hoursStr)) { showToast('Часы должны быть положительным числом'); return; }
+                    const hours = Number(hoursStr);
+                    const { day: d, month: m, year: y } = parsed;
+
+                    try {
+                        const url = `${DB_BASE}/Objects/${currentObject}/${y}/${m}/${d}.json`;
+                        const existingResp = await fetch(url);
+                        const existingData = await existingResp.json();
+                        let newHours = hours;
+                        let newComment = comment;
+                        if (existingData !== null) {
+                            let oldHours = 0;
+                            if (typeof existingData === 'number') {
+                                oldHours = existingData;
+                            } else if (existingData && typeof existingData === 'object') {
+                                oldHours = existingData.hours || 0;
+                                if (!newComment && existingData.comment) newComment = existingData.comment;
+                            }
+                            newHours = oldHours + hours;
+                            if (!newComment && existingData && existingData.comment) newComment = existingData.comment;
+                        }
+                        const payload = { hours: newHours, comment: newComment };
+                        const res = await fetch(url, {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(payload)
+                        });
+                        if (!res.ok) throw new Error();
+                        showToast('Запись добавлена');
+                        closeModal(overlay);
+                        selectObject(currentObject);
+                    } catch(e) {
+                        console.error(e);
+                        showToast('Ошибка добавления записи');
+                    }
+                }
+            };
+        }
+
+        // ---------- Редактирование записи ----------
+        function editRecord(day, month, year, currentHours, currentComment) {
+            const overlay = document.createElement('div');
+            overlay.className = 'modal-overlay';
+            const modal = document.createElement('div');
+            modal.className = 'modal-box';
+            const title = document.createElement('h3');
+            title.textContent = `Редактирование записи ${day}.${month}.${year}`;
+            modal.appendChild(title);
+
+            const inputTime = document.createElement('input');
+            inputTime.type = 'number';
+            inputTime.placeholder = 'Новое количество часов';
+            inputTime.value = currentHours;
+            inputTime.id = 'editTime';
+            modal.appendChild(inputTime);
+
+            const inputComment = document.createElement('textarea');
+            inputComment.placeholder = 'Комментарий';
+            inputComment.value = currentComment || '';
+            inputComment.id = 'editComment';
+            modal.appendChild(inputComment);
+
+            const actions = document.createElement('div');
+            actions.className = 'modal-actions';
+            const saveBtn = document.createElement('button');
+            saveBtn.className = 'btn-save';
+            saveBtn.textContent = 'Сохранить';
+            const cancelBtn = document.createElement('button');
+            cancelBtn.className = 'btn-cancel';
+            cancelBtn.textContent = 'Отмена';
+            actions.appendChild(saveBtn);
+            actions.appendChild(cancelBtn);
+            modal.appendChild(actions);
+            overlay.appendChild(modal);
+            document.body.appendChild(overlay);
+
+            cancelBtn.onclick = () => closeModal(overlay);
+
+            saveBtn.onclick = async () => {
+                const newHours = inputTime.value.trim();
+                if (!validateHours(newHours)) { showToast('Часы должны быть положительным числом'); return; }
+                const hours = Number(newHours);
+                const comment = inputComment.value.trim();
+                try {
+                    const url = `${DB_BASE}/Objects/${currentObject}/${year}/${month}/${day}.json`;
+                    const payload = { hours: hours, comment: comment };
+                    const res = await fetch(url, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    if (!res.ok) throw new Error();
+                    showToast('Запись обновлена');
+                    closeModal(overlay);
+                    selectObject(currentObject);
+                } catch(e) {
+                    console.error(e);
+                    showToast('Ошибка обновления');
+                }
+            };
+        }
+
+        // ---------- Удаление записи ----------
+        async function deleteRecord(day, month, year) {
+            try {
+                const url = `${DB_BASE}/Objects/${currentObject}/${year}/${month}/${day}.json`;
+                const res = await fetch(url, { method: 'DELETE' });
+                if (!res.ok) throw new Error();
+                showToast('Запись удалена');
+                selectObject(currentObject);
+            } catch(e) { showToast('Ошибка удаления записи'); }
+        }
+
+        // ---------- Удаление объекта (только в главном меню) ----------
+        async function deleteObject() {
+            if (!currentObject) {
+                const overlay = document.createElement('div');
+                overlay.className = 'modal-overlay';
+                const modal = document.createElement('div');
+                modal.className = 'modal-box';
+                const title = document.createElement('h3');
+                title.textContent = 'Выберите объект для удаления';
+                modal.appendChild(title);
+
+                const listDiv = document.createElement('div');
+                listDiv.className = 'export-list';
+
+                try {
+                    const resp = await fetch(`${DB_BASE}/Objects.json`);
+                    const data = await resp.json();
+                    if (!data) { showToast('Нет объектов для удаления'); return; }
+                    let selected = null;
+                    for (let key in data) {
+                        const label = document.createElement('label');
+                        const span = document.createElement('span');
+                        span.textContent = key;
+                        const radio = document.createElement('input');
+                        radio.type = 'radio';
+                        radio.name = 'deleteObject';
+                        radio.value = key;
+                        radio.onchange = () => { selected = key; };
+                        label.appendChild(span);
+                        label.appendChild(radio);
+                        listDiv.appendChild(label);
+                    }
+                    modal.appendChild(listDiv);
+
+                    const actions = document.createElement('div');
+                    actions.className = 'modal-actions';
+                    const delBtn = document.createElement('button');
+                    delBtn.className = 'btn-save';
+                    delBtn.textContent = 'Удалить выбранный';
+                    const cancelBtn = document.createElement('button');
+                    cancelBtn.className = 'btn-cancel';
+                    cancelBtn.textContent = 'Отмена';
+                    actions.appendChild(delBtn);
+                    actions.appendChild(cancelBtn);
+                    modal.appendChild(actions);
+                    overlay.appendChild(modal);
+                    document.body.appendChild(overlay);
+
+                    cancelBtn.onclick = () => closeModal(overlay);
+
+                    delBtn.onclick = async () => {
+                        if (!selected) { showToast('Выберите объект'); return; }
+                        if (!confirm(`Удалить объект "${selected}" и все его записи?`)) return;
+                        try {
+                            const url = `${DB_BASE}/Objects/${selected}.json`;
+                            const res = await fetch(url, { method: 'DELETE' });
+                            if (!res.ok) throw new Error();
+                            showToast('Объект удалён');
+                            closeModal(overlay);
+                            getObjects();
+                        } catch(e) { showToast('Ошибка удаления объекта'); }
+                    };
+                } catch(e) { showToast('Ошибка загрузки объектов'); }
+                return;
+            }
+            if (confirm(`Удалить объект "${currentObject}" и все его записи?`)) {
+                try {
+                    const url = `${DB_BASE}/Objects/${currentObject}.json`;
+                    const res = await fetch(url, { method: 'DELETE' });
+                    if (!res.ok) throw new Error();
+                    showToast('Объект удалён');
+                    currentObject = null;
+                    getObjects();
+                } catch(e) { showToast('Ошибка удаления объекта'); }
+            }
+        }
+
+        // ---------- Экспорт в Excel ----------
+        async function exportExcel() {
+            if (currentObject) {
+                try {
+                    const resp = await fetch(`${DB_BASE}/Objects/${currentObject}.json`);
+                    const data = await resp.json();
+                    if (!data) { showToast('Нет данных для экспорта'); return; }
+                    const rows = [['Объект', 'Год', 'Месяц', 'День', 'Часы', 'Комментарий']];
+                    for (let year in data) {
+                        for (let month in data[year]) {
+                            for (let day in data[year][month]) {
+                                const entry = data[year][month][day];
+                                let hours, comment = '';
+                                if (typeof entry === 'number') { hours = entry; }
+                                else if (entry && typeof entry === 'object') {
+                                    hours = entry.hours || 0;
+                                    comment = entry.comment || '';
+                                } else { hours = 0; }
+                                rows.push([currentObject, year, month, day, hours, comment]);
+                            }
+                        }
+                    }
+                    const wb = XLSX.utils.book_new();
+                    const ws = XLSX.utils.aoa_to_sheet(rows);
+                    XLSX.utils.book_append_sheet(wb, ws, 'Отчёт');
+                    XLSX.writeFile(wb, `${currentObject}_отчёт_${new Date().toISOString().slice(0,10)}.xlsx`);
+                    showToast('Отчёт по объекту выгружен');
+                } catch(e) { showToast('Ошибка экспорта'); }
+                return;
+            }
+
+            const overlay = document.createElement('div');
+            overlay.className = 'modal-overlay';
+            const modal = document.createElement('div');
+            modal.className = 'modal-box';
+            const title = document.createElement('h3');
+            title.textContent = 'Выберите объекты для экспорта';
+            modal.appendChild(title);
+
+            const listDiv = document.createElement('div');
+            listDiv.className = 'export-list';
+            try {
+                const resp = await fetch(`${DB_BASE}/Objects.json`);
+                const data = await resp.json();
+                if (!data) { showToast('Нет объектов для экспорта'); return; }
+                const checkboxes = {};
+                for (let key in data) {
+                    const label = document.createElement('label');
+                    const span = document.createElement('span');
+                    span.textContent = key;
+                    const cb = document.createElement('input');
+                    cb.type = 'checkbox';
+                    cb.value = key;
+                    cb.checked = true;
+                    checkboxes[key] = cb;
+                    label.appendChild(span);
+                    label.appendChild(cb);
+                    listDiv.appendChild(label);
+                }
+                modal.appendChild(listDiv);
+
+                const actions = document.createElement('div');
+                actions.className = 'modal-actions';
+                const selectAllBtn = document.createElement('button');
+                selectAllBtn.className = 'btn-select-all';
+                selectAllBtn.textContent = 'Выбрать все';
+                const exportBtn = document.createElement('button');
+                exportBtn.className = 'btn-save';
+                exportBtn.textContent = 'Экспортировать выбранные';
+                const cancelBtn = document.createElement('button');
+                cancelBtn.className = 'btn-cancel';
+                cancelBtn.textContent = 'Отмена';
+                actions.appendChild(selectAllBtn);
+                actions.appendChild(exportBtn);
+                actions.appendChild(cancelBtn);
+                modal.appendChild(actions);
+                overlay.appendChild(modal);
+                document.body.appendChild(overlay);
+
+                selectAllBtn.onclick = () => {
+                    const all = Object.values(checkboxes);
+                    const checked = all.every(cb => cb.checked);
+                    all.forEach(cb => cb.checked = !checked);
+                };
+
+                cancelBtn.onclick = () => closeModal(overlay);
+
+                exportBtn.onclick = async () => {
+                    const selected = Object.keys(checkboxes).filter(k => checkboxes[k].checked);
+                    if (selected.length === 0) { showToast('Выберите хотя бы один объект'); return; }
+                    closeModal(overlay);
+                    const allRows = [['Объект', 'Год', 'Месяц', 'День', 'Часы', 'Комментарий']];
+                    for (let obj of selected) {
+                        try {
+                            const r = await fetch(`${DB_BASE}/Objects/${obj}.json`);
+                            const d = await r.json();
+                            if (d) {
+                                for (let year in d) {
+                                    for (let month in d[year]) {
+                                        for (let day in d[year][month]) {
+                                            const entry = d[year][month][day];
+                                            let hours, comment = '';
+                                            if (typeof entry === 'number') { hours = entry; }
+                                            else if (entry && typeof entry === 'object') {
+                                                hours = entry.hours || 0;
+                                                comment = entry.comment || '';
+                                            } else { hours = 0; }
+                                            allRows.push([obj, year, month, day, hours, comment]);
+                                        }
+                                    }
+                                }
+                            }
+                        } catch(e) { console.error(e); }
+                    }
+                    if (allRows.length === 1) { showToast('Нет данных для выбранных объектов'); return; }
+                    const wb = XLSX.utils.book_new();
+                    const ws = XLSX.utils.aoa_to_sheet(allRows);
+                    XLSX.utils.book_append_sheet(wb, ws, 'Отчёт');
+                    XLSX.writeFile(wb, `Отчёт_по_объектам_${new Date().toISOString().slice(0,10)}.xlsx`);
+                    showToast('Отчёт выгружен');
+                };
+            } catch(e) { showToast('Ошибка загрузки объектов'); }
+        }
+
+        // ---------- Инициализация ----------
+        document.getElementById('exportBtn').addEventListener('click', exportExcel);
+        getObjects();
+    </script>
+</body>
+</html>
