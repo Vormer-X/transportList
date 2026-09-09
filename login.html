@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вход – СК-ТСМ</title>
+    <style>
+        /* твои стили (оставь как есть) */
+        * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI',sans-serif; }
+        body { display:flex; justify-content:center; align-items:center; min-height:100vh; background:#f5f5f5; }
+        main { width:100%; max-width:500px; }
+        .header { background:#ff6a00; color:#fff; text-align:center; padding:20px; border-radius:10px 10px 0 0; font-size:1.8rem; font-weight:700; }
+        .container { background:#1f1f1f; padding:40px 20px; border-radius:0 0 10px 10px; display:flex; flex-direction:column; align-items:center; gap:20px; }
+        .container input { width:90%; padding:15px; background:#1f1f1f; border:1px solid #ff6a00; border-radius:5px; color:#fff; font-size:1.2rem; }
+        .container input::placeholder { color:#aaa; }
+        .container button { width:60%; padding:15px; background:#ff6a00; color:#fff; border:none; border-radius:5px; font-size:1.4rem; font-weight:700; cursor:pointer; transition:0.2s; }
+        .container button:hover { background:#e05e00; }
+        #message { color:red; margin-top:5px; }
+        .register-link { color:#ff6a00; cursor:pointer; text-decoration:underline; margin-top:10px; }
+    </style>
+</head>
+<body>
+    <main>
+        <div class="header">ВХОД В СЕРВИС СК-ТСМ</div>
+        <div class="container">
+            <input id="email" type="email" placeholder="Электронная почта" autocomplete="email">
+            <input id="password" type="password" placeholder="Пароль" autocomplete="current-password">
+            <button id="loginBtn">ВОЙТИ</button>
+            <div id="message"></div>
+            <div class="register-link" id="registerLink">Ещё нет аккаунта? Зарегистрироваться</div>
+        </div>
+    </main>
+
+    <!-- Подключаем Firebase SDK (compat) через CDN -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-auth-compat.js"></script>
+
+    <script>
+        // Твоя конфигурация Firebase (скопируй из консоли)
+        var firebaseConfig = {
+            apiKey: "ВАШ_API_KEY",
+            authDomain: "sktsm-20bda.firebaseapp.com",
+            databaseURL: "https://sktsm-20bda-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "sktsm-20bda",
+            storageBucket: "sktsm-20bda.appspot.com",
+            messagingSenderId: "ID",
+            appId: "APP_ID"
+        };
+        firebase.initializeApp(firebaseConfig);
+        var auth = firebase.auth();
+
+        var emailInput = document.getElementById('email');
+        var passInput = document.getElementById('password');
+        var message = document.getElementById('message');
+        var loginBtn = document.getElementById('loginBtn');
+        var registerLink = document.getElementById('registerLink');
+
+        // Если уже залогинен – сразу в меню
+        auth.onAuthStateChanged(function(user) {
+            if (user) {
+                window.location.href = 'startMenu.html';
+            }
+        });
+
+        loginBtn.addEventListener('click', function() {
+            var email = emailInput.value.trim();
+            var password = passInput.value.trim();
+            if (!email || !password) {
+                message.textContent = 'Заполните все поля';
+                message.style.color = 'red';
+                return;
+            }
+            auth.signInWithEmailAndPassword(email, password)
+                .then(function() {
+                    // перенаправление произойдёт в onAuthStateChanged
+                })
+                .catch(function(error) {
+                    console.error(error);
+                    message.textContent = error.message;
+                    message.style.color = 'red';
+                });
+        });
+
+        // Регистрация
+        registerLink.addEventListener('click', function() {
+            var email = emailInput.value.trim();
+            var password = passInput.value.trim();
+            if (!email || !password) {
+                message.textContent = 'Введите email и пароль для регистрации';
+                message.style.color = 'red';
+                return;
+            }
+            if (password.length < 6) {
+                message.textContent = 'Пароль должен быть не менее 6 символов';
+                message.style.color = 'red';
+                return;
+            }
+            auth.createUserWithEmailAndPassword(email, password)
+                .then(function() {
+                    message.textContent = 'Аккаунт создан! Вход...';
+                    message.style.color = 'green';
+                })
+                .catch(function(error) {
+                    console.error(error);
+                    message.textContent = error.message;
+                    message.style.color = 'red';
+                });
+        });
+    </script>
+</body>
+</html>
