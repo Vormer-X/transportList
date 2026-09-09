@@ -303,7 +303,7 @@
                     var objRef = db.ref('Objects/' + name);
                     objRef.once('value').then(function(snap) {
                         if (snap.exists()) { showToast('Объект с таким именем уже существует'); return; }
-                        return objRef.set(null);
+                        return objRef.set({});
                     }).then(function() {
                         showToast('Объект создан');
                         closeModal(overlay);
