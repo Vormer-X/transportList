@@ -5,17 +5,158 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Вход – СК-ТСМ</title>
     <style>
-        * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI',sans-serif; }
-        body { display:flex; justify-content:center; align-items:center; min-height:100vh; background:#f5f5f5; }
-        main { width:100%; max-width:500px; }
-        .header { background:#ff6a00; color:#fff; text-align:center; padding:20px; border-radius:10px 10px 0 0; font-size:1.8rem; font-weight:700; }
-        .container { background:#1f1f1f; padding:40px 20px; border-radius:0 0 10px 10px; display:flex; flex-direction:column; align-items:center; gap:20px; }
-        .container input { width:90%; padding:15px; background:#1f1f1f; border:1px solid #ff6a00; border-radius:5px; color:#fff; font-size:1.2rem; }
-        .container input::placeholder { color:#aaa; }
-        .container button { width:60%; padding:15px; background:#ff6a00; color:#fff; border:none; border-radius:5px; font-size:1.4rem; font-weight:700; cursor:pointer; transition:0.2s; }
-        .container button:hover { background:#e05e00; }
-        #message { color:red; margin-top:5px; }
-        .register-link { color:#ff6a00; cursor:pointer; text-decoration:underline; margin-top:10px; }
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
+        }
+        
+        body { 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            min-height: 100vh; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }
+        
+        main { 
+            width: 100%; 
+            max-width: 400px; 
+        }
+        
+        .header { 
+            background: #ff6a00; 
+            color: #fff; 
+            text-align: center; 
+            padding: 25px 20px; 
+            border-radius: 20px 20px 0 0; 
+            font-size: 1.5rem; 
+            font-weight: 700; 
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 15px rgba(255, 106, 0, 0.3);
+        }
+        
+        .container { 
+            background: #ffffff; 
+            padding: 30px 20px; 
+            border-radius: 0 0 20px 20px; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            gap: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .container input { 
+            width: 100%; 
+            padding: 15px; 
+            background: #f8f9fa; 
+            border: 2px solid #e0e0e0; 
+            border-radius: 10px; 
+            color: #333; 
+            font-size: 1rem; 
+            transition: all 0.3s;
+        }
+        
+        .container input:focus {
+            outline: none;
+            border-color: #ff6a00;
+            background: #fff;
+            box-shadow: 0 0 0 3px rgba(255, 106, 0, 0.1);
+        }
+        
+        .container input::placeholder { 
+            color: #999; 
+        }
+        
+        .container button { 
+            width: 100%; 
+            padding: 15px; 
+            background: #ff6a00; 
+            color: #fff; 
+            border: none; 
+            border-radius: 10px; 
+            font-size: 1.1rem; 
+            font-weight: 700; 
+            cursor: pointer; 
+            transition: all 0.3s;
+            margin-top: 10px;
+            box-shadow: 0 4px 15px rgba(255, 106, 0, 0.3);
+        }
+        
+        .container button:hover { 
+            background: #e05e00; 
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 106, 0, 0.4);
+        }
+        
+        .container button:active {
+            transform: translateY(0);
+        }
+        
+        #message { 
+            color: #dc3545; 
+            margin-top: 5px; 
+            font-size: 0.9rem;
+            text-align: center;
+            min-height: 20px;
+        }
+        
+        /* Стили для мобильных устройств */
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+            
+            .header {
+                padding: 20px 15px;
+                font-size: 1.3rem;
+                border-radius: 15px 15px 0 0;
+            }
+            
+            .container {
+                padding: 25px 15px;
+                border-radius: 0 0 15px 15px;
+                gap: 12px;
+            }
+            
+            .container input {
+                padding: 14px;
+                font-size: 0.95rem;
+                border-radius: 8px;
+            }
+            
+            .container button {
+                padding: 14px;
+                font-size: 1rem;
+                border-radius: 8px;
+            }
+        }
+        
+        /* Стили для очень маленьких экранов */
+        @media (max-width: 320px) {
+            .header {
+                font-size: 1.1rem;
+                padding: 15px 10px;
+            }
+            
+            .container {
+                padding: 20px 10px;
+                gap: 10px;
+            }
+            
+            .container input {
+                padding: 12px;
+                font-size: 0.9rem;
+            }
+            
+            .container button {
+                padding: 12px;
+                font-size: 0.95rem;
+            }
+        }
     </style>
 </head>
 <body>
@@ -26,7 +167,6 @@
             <input id="password" type="password" placeholder="Пароль" autocomplete="current-password">
             <button id="loginBtn">ВОЙТИ</button>
             <div id="message"></div>
-            <div class="register-link" id="registerLink">Ещё нет аккаунта? Зарегистрироваться</div>
         </div>
     </main>
 
@@ -34,7 +174,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-auth-compat.js"></script>
 
     <script>
-        // Твоя конфигурация (вставлена)
+        // Конфигурация Firebase
         var firebaseConfig = {
             apiKey: "AIzaSyApQ3Uf09PPE777KAoFP_J0RIP73XzXPcc",
             authDomain: "sktsm-20bda.firebaseapp.com",
@@ -52,55 +192,69 @@
         var passInput = document.getElementById('password');
         var message = document.getElementById('message');
         var loginBtn = document.getElementById('loginBtn');
-        var registerLink = document.getElementById('registerLink');
 
+        // Проверка авторизации
         auth.onAuthStateChanged(function(user) {
             if (user) {
                 window.location.href = 'startMenu.html';
             }
         });
 
+        // Обработка входа
         loginBtn.addEventListener('click', function() {
             var email = emailInput.value.trim();
             var password = passInput.value.trim();
+            
             if (!email || !password) {
-                message.textContent = 'Заполните все поля';
-                message.style.color = 'red';
+                showMessage('Заполните все поля', 'error');
                 return;
             }
+            
+            loginBtn.disabled = true;
+            loginBtn.textContent = 'ВХОД...';
+            
             auth.signInWithEmailAndPassword(email, password)
-                .then(function() {})
-                .catch(function(error) {
-                    console.error(error);
-                    message.textContent = error.message;
-                    message.style.color = 'red';
-                });
-        });
-
-        registerLink.addEventListener('click', function() {
-            var email = emailInput.value.trim();
-            var password = passInput.value.trim();
-            if (!email || !password) {
-                message.textContent = 'Введите email и пароль для регистрации';
-                message.style.color = 'red';
-                return;
-            }
-            if (password.length < 6) {
-                message.textContent = 'Пароль должен быть не менее 6 символов';
-                message.style.color = 'red';
-                return;
-            }
-            auth.createUserWithEmailAndPassword(email, password)
                 .then(function() {
-                    message.textContent = 'Аккаунт создан! Вход...';
-                    message.style.color = 'green';
+                    // Успешный вход - редирект произойдёт автоматически
                 })
                 .catch(function(error) {
                     console.error(error);
-                    message.textContent = error.message;
-                    message.style.color = 'red';
+                    showMessage(getErrorMessage(error), 'error');
+                    loginBtn.disabled = false;
+                    loginBtn.textContent = 'ВОЙТИ';
                 });
         });
+
+        // Вход по Enter
+        passInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                loginBtn.click();
+            }
+        });
+
+        // Функция отображения сообщений
+        function showMessage(text, type) {
+            message.textContent = text;
+            message.style.color = type === 'error' ? '#dc3545' : '#28a745';
+        }
+
+        // Получение понятного сообщения об ошибке
+        function getErrorMessage(error) {
+            switch(error.code) {
+                case 'auth/invalid-email':
+                    return 'Неверный формат email';
+                case 'auth/user-disabled':
+                    return 'Аккаунт отключен';
+                case 'auth/user-not-found':
+                    return 'Пользователь не найден';
+                case 'auth/wrong-password':
+                    return 'Неверный пароль';
+                case 'auth/too-many-requests':
+                    return 'Слишком много попыток. Попробуйте позже';
+                default:
+                    return 'Ошибка входа. Попробуйте снова';
+            }
+        }
     </script>
 </body>
 </html>
