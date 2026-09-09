@@ -6,7 +6,6 @@
     <title>Отчёт о деятельности строительной техники ООО СК-ТСМ</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
-        /* все твои стили — копируй сюда (я их не меняю) */
         * { margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; box-sizing: border-box; }
         body { background: #f0f0f0; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
         main { width: 100%; max-width: 1100px; display: flex; flex-direction: column; align-items: center; gap: 20px; }
@@ -77,34 +76,32 @@
         </div>
     </main>
 
-    <!-- Firebase compat SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-database-compat.js"></script>
 
     <script>
-        // Конфигурация (такая же, как в login.html)
+        // Твоя конфигурация (вставлена)
         var firebaseConfig = {
-            apiKey: "ВАШ_API_KEY",
+            apiKey: "AIzaSyApQ3Uf09PPE777KAoFP_J0RIP73XzXPcc",
             authDomain: "sktsm-20bda.firebaseapp.com",
             databaseURL: "https://sktsm-20bda-default-rtdb.europe-west1.firebasedatabase.app",
             projectId: "sktsm-20bda",
-            storageBucket: "sktsm-20bda.appspot.com",
-            messagingSenderId: "ID",
-            appId: "APP_ID"
+            storageBucket: "sktsm-20bda.firebasestorage.app",
+            messagingSenderId: "777878757517",
+            appId: "1:777878757517:web:cdffc314809f92b2d802c4",
+            measurementId: "G-FWSX7MENHT"
         };
         firebase.initializeApp(firebaseConfig);
         var auth = firebase.auth();
         var db = firebase.database();
 
-        // Проверка авторизации
         auth.onAuthStateChanged(function(user) {
             if (!user) {
                 window.location.href = 'index.html';
             }
         });
 
-        // Выход
         document.getElementById('logoutBtn').addEventListener('click', function() {
             auth.signOut().then(function() {
                 window.location.href = 'index.html';
@@ -125,7 +122,6 @@
             return { day: String(d).padStart(2,'0'), month: String(m).padStart(2,'0'), year: String(y) };
         }
 
-        // ---------- Загрузка объектов ----------
         function getObjects() {
             placeholder.innerHTML = '';
             var objectsRef = db.ref('Objects');
@@ -155,7 +151,6 @@
             });
         }
 
-        // ---------- Выбор объекта ----------
         function selectObject(objectName) {
             currentObject = objectName;
             placeholder.innerHTML = '<button class="btn-back" onclick="getObjects()">← Назад</button>';
@@ -230,7 +225,6 @@
             });
         }
 
-        // ---------- Добавление (объекта или записи) ----------
         function addData() {
             var overlay = document.createElement('div');
             overlay.className = 'modal-overlay';
@@ -360,7 +354,6 @@
             };
         }
 
-        // ---------- Редактирование записи ----------
         function editRecord(day, month, year, currentHours, currentComment) {
             var overlay = document.createElement('div');
             overlay.className = 'modal-overlay';
@@ -418,7 +411,6 @@
             };
         }
 
-        // ---------- Удаление записи ----------
         function deleteRecord(day, month, year) {
             var recordRef = db.ref('Objects/' + currentObject + '/' + year + '/' + month + '/' + day);
             recordRef.remove()
@@ -432,10 +424,8 @@
                 });
         }
 
-        // ---------- Удаление объекта (в главном меню) ----------
         function deleteObject() {
             if (!currentObject) {
-                // Показываем модалку со списком объектов для выбора
                 var overlay = document.createElement('div');
                 overlay.className = 'modal-overlay';
                 var modal = document.createElement('div');
@@ -504,7 +494,6 @@
                 });
                 return;
             }
-            // Если currentObject есть, удаляем его напрямую
             if (confirm('Удалить объект "' + currentObject + '" и все его записи?')) {
                 var objRef = db.ref('Objects/' + currentObject);
                 objRef.remove()
@@ -520,7 +509,6 @@
             }
         }
 
-        // ---------- Экспорт в Excel ----------
         function exportExcel() {
             if (currentObject) {
                 var objRef = db.ref('Objects/' + currentObject);
@@ -551,7 +539,6 @@
                 return;
             }
 
-            // Экспорт нескольких объектов
             var overlay = document.createElement('div');
             overlay.className = 'modal-overlay';
             var modal = document.createElement('div');
@@ -646,7 +633,6 @@
             }).catch(function(e) { showToast('Ошибка загрузки объектов'); });
         }
 
-        // ---------- Инициализация ----------
         document.getElementById('exportBtn').addEventListener('click', exportExcel);
         getObjects();
     </script>
