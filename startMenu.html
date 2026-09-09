@@ -335,8 +335,9 @@
             gap: 8px;
             max-height: 300px;
             overflow-y: auto;
-            padding: 5px;
+            padding: 10px;
             width: 100%;
+            box-sizing: border-box;
         }
 
         .export-list label {
@@ -345,16 +346,20 @@
             align-items: center;
             gap: 15px;
             font-size: 1rem;
-            padding: 8px 12px;
+            padding: 12px 16px;
             border-radius: 6px;
             transition: 0.1s;
             cursor: pointer;
             width: 100%;
-            min-height: 40px;
+            min-height: 44px;
+            box-sizing: border-box;
+            border: 1px solid #e0e0e0;
+            background: #fafafa;
         }
 
         .export-list label:hover {
             background: #f0f0f0;
+            border-color: #ccc;
         }
 
         .export-list label span {
@@ -363,6 +368,8 @@
             padding-right: 10px;
             word-wrap: break-word;
             overflow-wrap: break-word;
+            font-weight: 500;
+            color: #333;
         }
 
         .export-list label input[type="checkbox"],
@@ -372,6 +379,8 @@
             cursor: pointer;
             margin-left: auto;
             accent-color: #ff6a00;
+            width: auto;
+            min-width: 20px;
         }
 
         /* Стилизация скроллбара */
@@ -471,18 +480,21 @@
             /* Список в модалке */
             .export-list {
                 max-height: 50vh;
-                padding: 10px;
+                padding: 8px;
+                gap: 6px;
             }
 
             .export-list label {
-                padding: 12px 10px;
-                gap: 15px;
+                padding: 14px 12px;
+                gap: 12px;
+                min-height: 48px;
             }
 
             .export-list label input[type="checkbox"],
             .export-list label input[type="radio"] {
                 transform: scale(1.5);
                 margin-left: 10px;
+                min-width: 24px;
             }
         }
 
