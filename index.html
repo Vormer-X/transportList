@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Вход – СК-ТСМ</title>
     <style>
-        /* твои стили (оставь как есть) */
         * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI',sans-serif; }
         body { display:flex; justify-content:center; align-items:center; min-height:100vh; background:#f5f5f5; }
         main { width:100%; max-width:500px; }
@@ -31,20 +30,20 @@
         </div>
     </main>
 
-    <!-- Подключаем Firebase SDK (compat) через CDN -->
     <script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-auth-compat.js"></script>
 
     <script>
-        // Твоя конфигурация Firebase (скопируй из консоли)
+        // Твоя конфигурация (вставлена)
         var firebaseConfig = {
-            apiKey: "ВАШ_API_KEY",
+            apiKey: "AIzaSyApQ3Uf09PPE777KAoFP_J0RIP73XzXPcc",
             authDomain: "sktsm-20bda.firebaseapp.com",
             databaseURL: "https://sktsm-20bda-default-rtdb.europe-west1.firebasedatabase.app",
             projectId: "sktsm-20bda",
-            storageBucket: "sktsm-20bda.appspot.com",
-            messagingSenderId: "ID",
-            appId: "APP_ID"
+            storageBucket: "sktsm-20bda.firebasestorage.app",
+            messagingSenderId: "777878757517",
+            appId: "1:777878757517:web:cdffc314809f92b2d802c4",
+            measurementId: "G-FWSX7MENHT"
         };
         firebase.initializeApp(firebaseConfig);
         var auth = firebase.auth();
@@ -55,7 +54,6 @@
         var loginBtn = document.getElementById('loginBtn');
         var registerLink = document.getElementById('registerLink');
 
-        // Если уже залогинен – сразу в меню
         auth.onAuthStateChanged(function(user) {
             if (user) {
                 window.location.href = 'startMenu.html';
@@ -71,9 +69,7 @@
                 return;
             }
             auth.signInWithEmailAndPassword(email, password)
-                .then(function() {
-                    // перенаправление произойдёт в onAuthStateChanged
-                })
+                .then(function() {})
                 .catch(function(error) {
                     console.error(error);
                     message.textContent = error.message;
@@ -81,7 +77,6 @@
                 });
         });
 
-        // Регистрация
         registerLink.addEventListener('click', function() {
             var email = emailInput.value.trim();
             var password = passInput.value.trim();
